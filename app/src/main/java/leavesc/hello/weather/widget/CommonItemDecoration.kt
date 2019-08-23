@@ -23,7 +23,7 @@ open class CommonItemDecoration : RecyclerView.ItemDecoration {
             val typedArray = context.obtainStyledAttributes(attrs)
             val drawable = typedArray.getDrawable(0)
             typedArray.recycle()
-            return drawable
+            return drawable!!
         }
     }
 

@@ -3,9 +3,9 @@ package leavesc.hello.weather.core.http
 import android.annotation.SuppressLint
 import io.reactivex.Observable
 import io.reactivex.ObservableSource
-import io.reactivex.Observer
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.functions.Function
+import io.reactivex.observers.DisposableObserver
 import io.reactivex.schedulers.Schedulers
 import leavesc.hello.weather.core.http.api.ApiService
 import leavesc.hello.weather.core.http.model.BaseResponse
@@ -16,7 +16,7 @@ import leavesc.hello.weather.core.http.model.OptionT
  * 时间：2019/5/31 11:16
  * 描述：
  */
-open class BaseRemoteDataSource(private val baseViewModelEvent: IBaseViewModelEvent) {
+open class BaseRemoteDataSource(private val baseViewModelEvent: IBaseViewModelEvent?) {
 
     protected fun getService(): ApiService = getService(
             ApiService::class.java,
@@ -27,16 +27,16 @@ open class BaseRemoteDataSource(private val baseViewModelEvent: IBaseViewModelEv
         return RetrofitManagement.instance.getService(clz, host)
     }
 
-    protected fun <T> execute(observable: Observable<BaseResponse<T>>, callback: RequestCallback<T>) {
-        execute(observable, BaseSubscriber(callback), false)
+    protected fun <T> execute(observable: Observable<BaseResponse<T>>, callback: RequestCallback<T>?, quietly: Boolean = false) {
+        execute(observable, BaseSubscriber(callback), quietly)
     }
 
-    protected fun <T> executeQuietly(observable: Observable<BaseResponse<T>>, callback: RequestCallback<T>) {
+    protected fun <T> executeQuietly(observable: Observable<BaseResponse<T>>, callback: RequestCallback<T>?) {
         execute(observable, BaseSubscriber(callback), true)
     }
 
     @SuppressLint("CheckResult")
-    private fun <T> execute(observable: Observable<BaseResponse<T>>, observer: Observer<OptionT<T>>, quietly: Boolean) {
+    private fun <T> execute(observable: Observable<BaseResponse<T>>, observer: DisposableObserver<OptionT<T>>, quietly: Boolean) {
         observable.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnSubscribe {
@@ -44,8 +44,11 @@ open class BaseRemoteDataSource(private val baseViewModelEvent: IBaseViewModelEv
                         showLoading()
                     }
                 }.doFinally {
-                    dismissLoading()
-                }.flatMap(object : Function<BaseResponse<T>, ObservableSource<OptionT<T>>> {
+                    if (!quietly) {
+                        dismissLoading()
+                    }
+                }
+                .flatMap(object : Function<BaseResponse<T>, ObservableSource<OptionT<T>>> {
                     override fun apply(t: BaseResponse<T>): ObservableSource<OptionT<T>> {
                         when {
                             t.code == HttpConfig.CODE_SUCCESS || t.message == "OK" -> {
@@ -72,15 +75,15 @@ open class BaseRemoteDataSource(private val baseViewModelEvent: IBaseViewModelEv
     }
 
     private fun showLoading() {
-        baseViewModelEvent.showLoading()
+        baseViewModelEvent?.showLoading()
     }
 
     private fun dismissLoading() {
-        baseViewModelEvent.dismissLoading()
+        baseViewModelEvent?.dismissLoading()
     }
 
     private fun showToast(msg: String) {
-        baseViewModelEvent.showToast(msg)
+        baseViewModelEvent?.showToast(msg)
     }
 
 }

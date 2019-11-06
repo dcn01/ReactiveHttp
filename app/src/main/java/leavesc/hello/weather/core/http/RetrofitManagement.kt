@@ -35,24 +35,22 @@ class RetrofitManagement private constructor() {
 
     private fun createRetrofit(url: String): Retrofit {
         val builder = OkHttpClient.Builder()
-            .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
-            .writeTimeout(WRITE_TIMEOUT, TimeUnit.MILLISECONDS)
-            .connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
-            .retryOnConnectionFailure(true)
-            .addInterceptor(FilterInterceptor())
-
+                .readTimeout(READ_TIMEOUT, TimeUnit.MILLISECONDS)
+                .writeTimeout(WRITE_TIMEOUT, TimeUnit.MILLISECONDS)
+                .connectTimeout(CONNECT_TIMEOUT, TimeUnit.MILLISECONDS)
+                .retryOnConnectionFailure(true)
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         builder.addInterceptor(httpLoggingInterceptor)
         builder.addInterceptor(MonitorInterceptor(ContextHolder.context))
-
+        builder.addInterceptor(FilterInterceptor())
         val client = builder.build()
         return Retrofit.Builder()
-            .client(client)
-            .baseUrl(url)
-            .addConverterFactory(GsonConverterFactory.create())
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
+                .client(client)
+                .baseUrl(url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build()
     }
 
     fun <T : Any> getService(clz: Class<T>, host: String): T {

@@ -13,6 +13,8 @@ interface RequestCallback<T> {
 
 interface RequestMultiplyCallback<T> : RequestCallback<T> {
 
-    fun onFail(e: BaseException)
+    fun onFail(exception: BaseException)
 
 }
+
+interface RequestMultiplyToastCallback<T> : RequestMultiplyCallback<T>

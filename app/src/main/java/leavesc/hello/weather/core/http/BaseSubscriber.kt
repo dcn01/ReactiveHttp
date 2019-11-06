@@ -9,24 +9,38 @@ import leavesc.hello.weather.core.http.model.OptionT
  * 时间：2019/5/31 11:03
  * 描述：
  */
-class BaseSubscriber<T> constructor(private val requestCallback: RequestCallback<T>) :
-    DisposableObserver<OptionT<T>>() {
+class BaseSubscriber<T> constructor(private val requestCallback: RequestCallback<T>?) :
+        DisposableObserver<OptionT<T>>() {
 
     override fun onNext(t: OptionT<T>) {
-        requestCallback.onSuccess(t.value)
+        requestCallback?.onSuccess(t.value)
     }
 
     override fun onError(e: Throwable) {
-        e.printStackTrace()
-        val msg = e.message ?: "未知错误"
-        if (requestCallback is RequestMultiplyCallback) {
-            if (e is BaseException) {
-                requestCallback.onFail(e)
-            } else {
-                requestCallback.onFail(ServerResultException(msg))
+        if (requestCallback == null) {
+            return
+        }
+        val message = e.message
+        val msg = if (message.isNullOrBlank()) "未知错误" else message
+        when (requestCallback) {
+            is RequestMultiplyToastCallback -> {
+                ToastHolder.showToast(msg = msg)
+                if (e is BaseException) {
+                    requestCallback.onFail(e)
+                } else {
+                    requestCallback.onFail(ServerResultException(message = msg))
+                }
             }
-        } else {
-            ToastHolder.showToast(msg = msg)
+            is RequestMultiplyCallback -> {
+                if (e is BaseException) {
+                    requestCallback.onFail(e)
+                } else {
+                    requestCallback.onFail(ServerResultException(message = msg))
+                }
+            }
+            else -> {
+                ToastHolder.showToast(msg = msg)
+            }
         }
     }
 

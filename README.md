@@ -1,3 +1,5 @@
+> 更新于 2019/11/07
+
 ### 一、前言
 
 在今年的二月份，我在发布本 Repo：[基于 ViewModel + LiveData + Retrofit + RxJava 封装的网络请求框架](https://github.com/leavesC/ViewModel_Retrofit_RxJava) 的同时，也写了一篇博客介绍了项目特色以及实现思路：[ViewModel_Retrofit_RxJava_1.0](https://github.com/leavesC/ViewModel_Retrofit_RxJava/blob/master/README.md)，详细地介绍了一步步封装的过程，也陆续获得了一些读者的正向反馈，让我意识到了一些不足点，而到现在六月份，公司的项目也逐渐地转为了 Kotlin，因此也促使我来写第二篇博客
@@ -8,9 +10,11 @@
 
 - 1.0 版本即 master 分支，是使用 Java 语言写的，也是最初始的版本，其实现思路可以看这里：[ViewModel_Retrofit_RxJava_1.0](https://github.com/leavesC/ViewModel_Retrofit_RxJava/blob/master/README.md)，用了比较大的篇幅介绍了我封装此网络请求框架的思路，建议读者首先去看下该文章
 
-- 2.0 版本即 kotlin 分支，顾名思义，我用 Kotlin 重写了一遍，当然也不仅仅只是简单的转换了下语言而已，也解决了 1.0 版本不太理想或者不太合理的地方，也得益于 Kotlin 语言的简洁性，使得整个基础库更加得短小精悍，表达能力也显得更加强大
+- 2.0 版本即 kotlin 分支，顾名思义，我用 Kotlin 重构了一遍，当然也不仅仅只是简单的转换了下语言而已，也解决了 1.0 版本不太理想或者不太合理的地方，也得益于 Kotlin 语言的简洁性，使得整个基础库更加得短小精悍，表达能力也显得更加强大
 
     ![](https://upload-images.jianshu.io/upload_images/2552605-5490b0a621a732be.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+
+> 本 repo 不会再维护 master 分支对应的 Java 版本，以后也只在 kotlin 分支上进行更新
 
 ### 三、优化点
 

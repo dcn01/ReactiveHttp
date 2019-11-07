@@ -14,7 +14,7 @@ import leavesc.hello.weather.core.model.DistrictBean
  * 描述：
  */
 class PlaceAdapter(private val dataList: List<DistrictBean>, private val onClickListener: OnClickListener) :
-    RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
+        RecyclerView.Adapter<PlaceAdapter.PlaceViewHolder>() {
 
     interface OnClickListener {
         fun onClick(position: Int)

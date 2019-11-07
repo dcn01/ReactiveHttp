@@ -15,33 +15,33 @@ open class BaseViewModel : ViewModel(), IBaseViewModelEvent {
 
     override fun showLoading(msg: String) {
         val event =
-            BaseViewModelEvent(BaseViewModelEvent.SHOW_LOADING_DIALOG)
+                BaseViewModelEvent(BaseViewModelEvent.SHOW_LOADING_DIALOG)
         event.message = msg
         baseActionEvent.value = event
     }
 
     override fun dismissLoading() {
         val event =
-            BaseViewModelEvent(BaseViewModelEvent.DISMISS_LOADING_DIALOG)
+                BaseViewModelEvent(BaseViewModelEvent.DISMISS_LOADING_DIALOG)
         baseActionEvent.value = event
     }
 
     override fun showToast(msg: String) {
         val event =
-            BaseViewModelEvent(BaseViewModelEvent.SHOW_TOAST)
+                BaseViewModelEvent(BaseViewModelEvent.SHOW_TOAST)
         event.message = msg
         baseActionEvent.value = event
     }
 
     override fun finishView() {
         val event =
-            BaseViewModelEvent(BaseViewModelEvent.FINISH)
+                BaseViewModelEvent(BaseViewModelEvent.FINISH)
         baseActionEvent.value = event
     }
 
     override fun pop() {
         val event =
-            BaseViewModelEvent(BaseViewModelEvent.POP)
+                BaseViewModelEvent(BaseViewModelEvent.POP)
         baseActionEvent.value = event
     }
 

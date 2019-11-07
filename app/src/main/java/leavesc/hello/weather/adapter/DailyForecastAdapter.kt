@@ -16,15 +16,15 @@ import leavesc.hello.weather.core.model.CastsBean
  * Blog：https://www.jianshu.com/u/9df45b87cfdf
  */
 class WeatherAdapter(private val districtsBeanList: List<CastsBean>) :
-    RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>() {
+        RecyclerView.Adapter<WeatherAdapter.WeatherViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): WeatherViewHolder {
         return WeatherViewHolder(
-            LayoutInflater.from(parent.context).inflate(
-                R.layout.item_daily_forecast,
-                parent,
-                false
-            )
+                LayoutInflater.from(parent.context).inflate(
+                        R.layout.item_daily_forecast,
+                        parent,
+                        false
+                )
         )
     }
 

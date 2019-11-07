@@ -42,6 +42,7 @@ class RetrofitManagement private constructor() {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         builder.addInterceptor(httpLoggingInterceptor)
+        //这是我的另外一个开源库：https://github.com/leavesC/Monitor
         builder.addInterceptor(MonitorInterceptor(ContextHolder.context))
         builder.addInterceptor(FilterInterceptor())
         val client = builder.build()

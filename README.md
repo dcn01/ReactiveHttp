@@ -294,6 +294,6 @@ class BaseSubscriber<T> constructor(private val requestCallback: RequestCallback
 
 为了方便读者理解，这里我也提供了一个 Demo 供读者参考，2.0 版本其本身就是一个完整的**天气预报App**，读者可以自行下载运行
 
-#### **App下载：[Weather](https://www.pgyer.com/WeatherLeavesC)**
+#### **App下载：[Weather](doc/app-debug.apk)**
 
 ![](https://upload-images.jianshu.io/upload_images/2552605-33e4c24002d496a2.gif?imageMogr2/auto-orient/strip)

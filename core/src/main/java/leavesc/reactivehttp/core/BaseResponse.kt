@@ -8,14 +8,33 @@ import leavesc.reactivehttp.core.config.HttpConfig
  * 时间：2019/5/31 10:58
  * 描述：
  */
-class BaseResponse<T>(
-        @SerializedName("status") var code: Int = 0,
-        @SerializedName("info") var message: String? = null,
-        @SerializedName("districts", alternate = ["forecasts"]) var data: T) {
+interface IBaseResponse<T> {
+
+    val httpCode: Int
+
+    val httpMsg: String
+
+    val httpData: T
 
     val isSuccess: Boolean
-        get() = code == HttpConfig.CODE_SUCCESS || message == "OK"
 
 }
 
-class OptionT<T>(val value: T)
+class BaseResponse<T>(
+        @SerializedName("status") var code: Int = 0,
+        @SerializedName("info") var message: String? = null,
+        @SerializedName("districts", alternate = ["forecasts"]) var data: T) : IBaseResponse<T> {
+
+    override val httpCode: Int
+        get() = code
+
+    override val httpMsg: String
+        get() = message ?: ""
+
+    override val httpData: T
+        get() = data
+
+    override val isSuccess: Boolean
+        get() = code == HttpConfig.CODE_SUCCESS || message == "OK"
+
+}

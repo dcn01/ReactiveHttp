@@ -23,7 +23,7 @@ open class BaseRemoteDataSource<T : Any>(private val baseViewModelEvent: IBaseVi
     protected val scope
         get() = baseViewModelEvent?.lViewModelScope ?: GlobalScope
 
-    protected fun <T> execute(block: suspend () -> BaseResponse<T>, callback: RequestCallback<T>?, quietly: Boolean = false): Job {
+    protected fun <T> execute(block: suspend () -> IBaseResponse<T>, callback: RequestCallback<T>?, quietly: Boolean = false): Job {
         val temp = true
         return scope.launch(Dispatchers.IO) {
             try {
@@ -36,11 +36,10 @@ open class BaseRemoteDataSource<T : Any>(private val baseViewModelEvent: IBaseVi
                 callback?.let {
                     if (response.isSuccess) {
                         withContext(Handler(Looper.getMainLooper()).asCoroutineDispatcher()) {
-                            callback.onSuccess(response.data)
+                            callback.onSuccess(response.httpData)
                         }
                     } else {
-                        handleException(ServerBadException(response.message
-                                ?: "", response.code), callback)
+                        handleException(ServerBadException(response.httpMsg, response.httpCode), callback)
                     }
                 }
             } catch (throwable: Throwable) {

@@ -6,4 +6,4 @@
     android:background="@color/normalBg"
     android:orientation="vertical"
     android:padding="10dp"
-    tools:context=".ui.MainActivity" />
+    tools:context="leavesc.reactivehttp.weather.ui.MainActivity" />

@@ -12,10 +12,6 @@
 
 4、逻辑操作与 UI 层相分离，基于观察者模式来实现消息驱动 UI 变化。提供了在 ViewModel 中操作 UI 变化的能力，包括使 Activity / Fragment 弹出对话框、Toast 消息、finishActivity 等 UI 操作，但 ViewModel 不持有 Activity / Fragment 的引用，而是基于消息驱动实现，从而避免了内存泄漏
 
-#### 源码点击这里查看：[ViewModel_Retrofit_RxJava](https://github.com/leavesC/ViewModel_Retrofit_RxJava)
-
-#### Apk 点击这里下载：[ViewModel_Retrofit_RxJava](https://www.pgyer.com/ViewModel_Retrofit_RxJava)
-
 ### 二、封装 BaseViewModel 与 BaseActivity
 
 **ViewModel** 与 **LiveData** 都是 **Android Jetpack** 架构组件之一。ViewModel 被设计用来存储和管理 UI 相关数据，以便数据能在界面销毁时（比如屏幕旋转）保存数据，而与 **ViewModel** 相挂钩的 **LiveData** 是一个用于保存可以被观察的值的数据持有类，且遵循应用组件的生命周期，只有在组件的生命周期处于活跃状态时才会收到数据更新通知
@@ -1042,8 +1038,3 @@ public class FailExampleViewModel extends BaseViewModel {
 ### 八、结束语
 
 这就是整个请求框架的大体架构了，也经过了实际项目的考验了，目前运行良好，但里面可能还会包含一些不合理的地方，欢迎大家指正反馈，如果觉得对你有所帮助，也欢迎 star
-
-#### 源码点击这里查看：[ViewModel_Retrofit_RxJava](https://github.com/leavesC/ViewModel_Retrofit_RxJava)
-
-#### Apk 点击这里下载：[ViewModel_Retrofit_RxJava](https://www.pgyer.com/ViewModel_Retrofit_RxJava)
-

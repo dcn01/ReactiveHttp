@@ -8,20 +8,21 @@ import leavesc.reactivehttp.core.config.BaseException
 import leavesc.reactivehttp.core.config.HttpConfig
 import leavesc.reactivehttp.core.config.RequestBadException
 import leavesc.reactivehttp.core.config.ServerBadException
+import leavesc.reactivehttp.core.viewmodel.IBaseViewModeEventScope
 
 /**
  * 作者：leavesC
  * 时间：2019/5/31 11:16
  * 描述：
  */
-open class BaseRemoteDataSource<T : Any>(private val baseViewModelEvent: IBaseViewModeScope?, private val serviceApiClass: Class<T>) {
+open class BaseRemoteDataSource<T : Any>(private val baseViewModelEventEvent: IBaseViewModeEventScope?, private val serviceApiClass: Class<T>) {
 
     protected fun getService(host: String = HttpConfig.BASE_URL_MAP): T {
-        return RetrofitManagement.instance.getService(serviceApiClass, host)
+        return RetrofitManagement.getService(serviceApiClass, host)
     }
 
     protected val scope
-        get() = baseViewModelEvent?.lViewModelScope ?: GlobalScope
+        get() = baseViewModelEventEvent?.lViewModelScope ?: GlobalScope
 
     protected fun <T> execute(block: suspend () -> IBaseResponse<T>, callback: RequestCallback<T>?, quietly: Boolean = false): Job {
         val temp = true
@@ -60,7 +61,8 @@ open class BaseRemoteDataSource<T : Any>(private val baseViewModelEvent: IBaseVi
                 val exception = if (throwable is BaseException) {
                     throwable
                 } else {
-                    RequestBadException(throwable.message ?: "", HttpConfig.CODE_UNKNOWN, throwable)
+                    RequestBadException(throwable.message
+                            ?: "", HttpConfig.CODE_LOCAL_UNKNOWN, throwable)
                 }
                 when (callback) {
                     is RequestMultiplyToastCallback -> {
@@ -87,15 +89,15 @@ open class BaseRemoteDataSource<T : Any>(private val baseViewModelEvent: IBaseVi
     }
 
     private fun showLoading() {
-        baseViewModelEvent?.showLoading()
+        baseViewModelEventEvent?.showLoading()
     }
 
     private fun dismissLoading() {
-        baseViewModelEvent?.dismissLoading()
+        baseViewModelEventEvent?.dismissLoading()
     }
 
     private fun showToast(msg: String) {
-        baseViewModelEvent?.showToast(msg)
+        baseViewModelEventEvent?.showToast(msg)
     }
 
 }

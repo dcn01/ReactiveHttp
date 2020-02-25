@@ -12,13 +12,6 @@ import leavesc.reactivehttp.core.holder.ContextHolder
  */
 class MainApplication : Application() {
 
-    companion object {
-
-        lateinit var context: MainApplication
-            private set
-
-    }
-
     override fun onCreate() {
         super.onCreate()
         ContextHolder.context = this

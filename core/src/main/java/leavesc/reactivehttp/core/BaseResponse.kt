@@ -35,6 +35,6 @@ class BaseResponse<T>(
         get() = data
 
     override val isSuccess: Boolean
-        get() = code == HttpConfig.CODE_SUCCESS || message == "OK"
+        get() = code == HttpConfig.CODE_SERVER_SUCCESS || message == "OK"
 
 }

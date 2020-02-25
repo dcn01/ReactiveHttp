@@ -14,21 +14,13 @@ import java.util.concurrent.TimeUnit
  * 时间：2019/5/31 11:18
  * 描述：
  */
-class RetrofitManagement private constructor() {
+object RetrofitManagement {
 
-    companion object {
+    private const val READ_TIMEOUT = 10000L
 
-        private const val READ_TIMEOUT: Long = 10000
+    private const val WRITE_TIMEOUT = 10000L
 
-        private const val WRITE_TIMEOUT: Long = 10000
-
-        private const val CONNECT_TIMEOUT: Long = 10000
-
-        val instance: RetrofitManagement by lazy(LazyThreadSafetyMode.SYNCHRONIZED) {
-            RetrofitManagement()
-        }
-
-    }
+    private const val CONNECT_TIMEOUT = 10000L
 
     private val serviceMap = ConcurrentHashMap<String, Any>()
 

@@ -11,11 +11,11 @@ import java.net.UnknownHostException
  * 描述：
  */
 /**
- * @param errorMessage      服务器返回的异常信息 或者是 运行时异常抛出的信息，是最原始的异常信息
- * @param code              服务器返回的错误码 或者是 HttpConfig.CODE_UNKNOWN（运行时异常）
- * @param realException     用于当 code 是 HttpConfig.CODE_UNKNOWN 时，存储真实的运行时异常
+ * @param errorMessage      服务器返回的异常信息 或者是 请求过程中抛出的信息，是最原始的异常信息
+ * @param code              服务器返回的错误码 或者是 HttpConfig 中定义的本地错误码
+ * @param realException     用于当 code 是本地错误码时，存储真实的运行时异常
  */
-sealed class BaseException(private val errorMessage: String, val code: Int, val realException: Throwable? = null) : Exception(errorMessage) {
+sealed class BaseException(private val errorMessage: String, private val code: Int, private val realException: Throwable?) : Exception(errorMessage) {
 
     //格式化好的异常信息
     val formatError: String
@@ -39,7 +39,7 @@ sealed class BaseException(private val errorMessage: String, val code: Int, val 
 }
 
 //服务器请求成功了，但 status != successCode
-class ServerBadException(message: String, code: Int) : BaseException(message, code)
+class ServerBadException(message: String, code: Int) : BaseException(message, code, null)
 
 //请求过程抛出异常
 class RequestBadException(message: String, code: Int, realException: Throwable) : BaseException(message, code, realException)

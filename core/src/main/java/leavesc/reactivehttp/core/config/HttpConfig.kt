@@ -5,20 +5,18 @@ package leavesc.reactivehttp.core.config
  * 时间：2019/5/31 10:49
  * 描述：
  */
-class HttpConfig {
+object HttpConfig {
 
-    companion object {
+    const val BASE_URL_MAP = "https://restapi.amap.com/v3/"
 
-        const val BASE_URL_MAP = "https://restapi.amap.com/v3/"
+    const val KEY = "key"
 
-        const val KEY = "key"
+    const val KEY_MAP = "fb0a1b0d89f3b93adca639f0a29dbf23"
 
-        const val KEY_MAP = "fb0a1b0d89f3b93adca639f0a29dbf23"
+    //服务端返回的 code 以 CODE_SERVER 开头
+    const val CODE_SERVER_SUCCESS = 1
 
-        const val CODE_UNKNOWN = -1024
-
-        const val CODE_SUCCESS = 1
-
-    }
+    //本地定义的 code 以 CODE_LOCAL 开头
+    const val CODE_LOCAL_UNKNOWN = -1024
 
 }

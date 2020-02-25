@@ -2,10 +2,14 @@ package leavesc.reactivehttp.core.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.os.Handler
+import android.os.Looper
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
+import kotlinx.coroutines.android.asCoroutineDispatcher
+import kotlin.coroutines.CoroutineContext
 
 /**
  * 作者：leavesC
@@ -32,7 +36,37 @@ class BaseViewModelEvent(override val action: Int) : BaseEvent(action) {
 
 }
 
-interface IBaseViewModelEvent {
+interface ICoroutineEvent {
+
+    val lCoroutineScope: CoroutineScope
+
+    val mainDispatcher: CoroutineDispatcher
+        get() = Handler(Looper.getMainLooper()).asCoroutineDispatcher()
+
+    private fun defaultLaunch(context: CoroutineContext, block: suspend CoroutineScope.() -> Unit): Job {
+        return lCoroutineScope.launch(context) {
+            block()
+        }
+    }
+
+    //用于在主线程中启动协程完成操作
+    fun launchUI(block: suspend CoroutineScope.() -> Unit): Job {
+        return defaultLaunch(Handler(Looper.getMainLooper()).asCoroutineDispatcher(), block)
+    }
+
+    //用于完成 CPU 密集型的操作
+    fun launchCPU(block: suspend CoroutineScope.() -> Unit): Job {
+        return defaultLaunch(Dispatchers.Default, block)
+    }
+
+    //用于在 IO 密集型的操作
+    fun launchIO(block: suspend CoroutineScope.() -> Unit): Job {
+        return defaultLaunch(Dispatchers.IO, block)
+    }
+
+}
+
+interface IBaseViewModelEvent : ICoroutineEvent {
 
     fun showLoading(msg: String)
 
@@ -45,12 +79,6 @@ interface IBaseViewModelEvent {
     fun showToast(msg: String)
 
     fun finishView()
-
-}
-
-interface IBaseViewModeEventScope : IBaseViewModelEvent {
-
-    val lViewModelScope: CoroutineScope
 
 }
 

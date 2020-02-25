@@ -1,42 +1,42 @@
 package leavesc.reactivehttp.core
 
-import android.os.Handler
-import android.os.Looper
-import kotlinx.coroutines.*
-import kotlinx.coroutines.android.asCoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
 import leavesc.reactivehttp.core.config.BaseException
 import leavesc.reactivehttp.core.config.HttpConfig
 import leavesc.reactivehttp.core.config.RequestBadException
 import leavesc.reactivehttp.core.config.ServerBadException
-import leavesc.reactivehttp.core.viewmodel.IBaseViewModeEventScope
+import leavesc.reactivehttp.core.viewmodel.IBaseViewModelEvent
+import leavesc.reactivehttp.core.viewmodel.ICoroutineEvent
 
 /**
  * 作者：leavesC
  * 时间：2019/5/31 11:16
  * 描述：
  */
-open class BaseRemoteDataSource<T : Any>(private val baseViewModelEventEvent: IBaseViewModeEventScope?, private val serviceApiClass: Class<T>) {
+open class BaseRemoteDataSource<T : Any>(private val baseViewModelEventEvent: IBaseViewModelEvent?, private val serviceApiClass: Class<T>) : ICoroutineEvent {
 
     protected fun getService(host: String = HttpConfig.BASE_URL_MAP): T {
         return RetrofitManagement.getService(serviceApiClass, host)
     }
 
-    protected val scope
-        get() = baseViewModelEventEvent?.lViewModelScope ?: GlobalScope
+    override val lCoroutineScope: CoroutineScope
+        get() = baseViewModelEventEvent?.lCoroutineScope ?: GlobalScope
 
     protected fun <T> execute(block: suspend () -> IBaseResponse<T>, callback: RequestCallback<T>?, quietly: Boolean = false): Job {
         val temp = true
-        return scope.launch(Dispatchers.IO) {
+        return launchIO {
             try {
                 if (!temp) {
-                    withContext(Handler(Looper.getMainLooper()).asCoroutineDispatcher()) {
+                    launchUI {
                         showLoading()
                     }
                 }
                 val response = block()
                 callback?.let {
                     if (response.isSuccess) {
-                        withContext(Handler(Looper.getMainLooper()).asCoroutineDispatcher()) {
+                        launchUI {
                             callback.onSuccess(response.httpData)
                         }
                     } else {
@@ -47,7 +47,7 @@ open class BaseRemoteDataSource<T : Any>(private val baseViewModelEventEvent: IB
                 handleException(throwable, callback)
             } finally {
                 if (!temp) {
-                    withContext(Handler(Looper.getMainLooper()).asCoroutineDispatcher()) {
+                    launchUI {
                         dismissLoading()
                     }
                 }
@@ -55,9 +55,9 @@ open class BaseRemoteDataSource<T : Any>(private val baseViewModelEventEvent: IB
         }
     }
 
-    private suspend fun <T> handleException(throwable: Throwable, callback: RequestCallback<T>?) {
+    private fun <T> handleException(throwable: Throwable, callback: RequestCallback<T>?) {
         callback?.let {
-            withContext(Handler(Looper.getMainLooper()).asCoroutineDispatcher()) {
+            launchUI {
                 val exception = if (throwable is BaseException) {
                     throwable
                 } else {

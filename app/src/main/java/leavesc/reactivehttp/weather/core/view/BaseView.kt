@@ -7,6 +7,8 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProviders
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
 import leavesc.reactivehttp.core.viewmodel.BaseViewModel
 import leavesc.reactivehttp.core.viewmodel.IBaseViewModelEventObserver
 
@@ -17,6 +19,9 @@ import leavesc.reactivehttp.core.viewmodel.IBaseViewModelEventObserver
  */
 @SuppressLint("Registered")
 abstract class BaseActivity : AppCompatActivity(), IBaseViewModelEventObserver {
+
+    override val lCoroutineScope: CoroutineScope
+        get() = MainScope()
 
     override val lContext: Context?
         get() = this

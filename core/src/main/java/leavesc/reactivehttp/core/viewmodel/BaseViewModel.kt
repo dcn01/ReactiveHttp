@@ -15,8 +15,7 @@ open class BaseViewModel : ViewModel(), IBaseViewModelEvent {
     //lViewModelScope 用于决定在 ViewModel 内部启动的协程的生命周期
     //默认实现是以 ViewModel 的消亡作为所有协程的终结点
     //子 ViewModel 可以覆写该字段以实现新的生命周期
-    override val lifecycleCoroutineScope: CoroutineScope
-        get() = GlobalScope
+    override val lifecycleCoroutineScope: CoroutineScope = GlobalScope
 
     val baseActionEvent = MutableLiveData<BaseViewModelEvent>()
 

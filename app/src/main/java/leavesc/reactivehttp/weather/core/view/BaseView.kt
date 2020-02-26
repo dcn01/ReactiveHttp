@@ -20,8 +20,7 @@ import leavesc.reactivehttp.core.viewmodel.IBaseViewModelEventObserver
 @SuppressLint("Registered")
 abstract class BaseActivity : AppCompatActivity(), IBaseViewModelEventObserver {
 
-    override val lifecycleCoroutineScope: CoroutineScope
-        get() = MainScope()
+    override val lifecycleCoroutineScope: CoroutineScope = MainScope()
 
     override val lContext: Context?
         get() = this

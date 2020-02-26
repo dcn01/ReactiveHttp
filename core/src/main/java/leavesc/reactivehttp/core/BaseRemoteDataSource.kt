@@ -15,13 +15,13 @@ import leavesc.reactivehttp.core.viewmodel.ICoroutineEvent
  * 时间：2019/5/31 11:16
  * 描述：
  */
-open class BaseRemoteDataSource<T : Any>(private val baseViewModelEventEvent: IBaseViewModelEvent?, private val serviceApiClass: Class<T>) : ICoroutineEvent {
+open class BaseRemoteDataSource<T : Any>(private val iBaseViewModelEvent: IBaseViewModelEvent?, private val serviceApiClass: Class<T>) : ICoroutineEvent {
 
     protected fun getService(host: String = HttpConfig.BASE_URL_MAP): T {
         return RetrofitManagement.getService(serviceApiClass, host)
     }
 
-    override val lifecycleCoroutineScope: CoroutineScope = baseViewModelEventEvent?.lifecycleCoroutineScope
+    override val lifecycleCoroutineScope: CoroutineScope = iBaseViewModelEvent?.lifecycleCoroutineScope
             ?: GlobalScope
 
     protected fun <T> execute(block: suspend () -> IBaseResponse<T>, callback: RequestCallback<T>?, quietly: Boolean = false): Job {
@@ -89,15 +89,15 @@ open class BaseRemoteDataSource<T : Any>(private val baseViewModelEventEvent: IB
     }
 
     private fun showLoading() {
-        baseViewModelEventEvent?.showLoading()
+        iBaseViewModelEvent?.showLoading()
     }
 
     private fun dismissLoading() {
-        baseViewModelEventEvent?.dismissLoading()
+        iBaseViewModelEvent?.dismissLoading()
     }
 
     private fun showToast(msg: String) {
-        baseViewModelEventEvent?.showToast(msg)
+        iBaseViewModelEvent?.showToast(msg)
     }
 
 }

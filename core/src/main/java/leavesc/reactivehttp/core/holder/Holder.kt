@@ -8,22 +8,12 @@ import android.widget.Toast
  * 时间：2019/5/31 11:07
  * 描述：
  */
-class ContextHolder {
+object ContextHolder {
 
-    companion object {
-
-        lateinit var context: Context
-
-    }
+    lateinit var context: Context
 
 }
 
-class ToastHolder {
-
-    companion object {
-        fun showToast(context: Context = ContextHolder.context, msg: String) {
-            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-        }
-    }
-
+fun showToast(context: Context = ContextHolder.context, msg: String) {
+    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
 }

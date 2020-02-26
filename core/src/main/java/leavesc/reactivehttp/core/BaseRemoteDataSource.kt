@@ -21,8 +21,8 @@ open class BaseRemoteDataSource<T : Any>(private val baseViewModelEventEvent: IB
         return RetrofitManagement.getService(serviceApiClass, host)
     }
 
-    override val lCoroutineScope: CoroutineScope
-        get() = baseViewModelEventEvent?.lCoroutineScope ?: GlobalScope
+    override val lifecycleCoroutineScope: CoroutineScope
+        get() = baseViewModelEventEvent?.lifecycleCoroutineScope ?: GlobalScope
 
     protected fun <T> execute(block: suspend () -> IBaseResponse<T>, callback: RequestCallback<T>?, quietly: Boolean = false): Job {
         val temp = true
@@ -35,7 +35,7 @@ open class BaseRemoteDataSource<T : Any>(private val baseViewModelEventEvent: IB
                 }
                 val response = block()
                 callback?.let {
-                    if (response.isSuccess) {
+                    if (response.httpIsSuccess) {
                         launchUI {
                             callback.onSuccess(response.httpData)
                         }

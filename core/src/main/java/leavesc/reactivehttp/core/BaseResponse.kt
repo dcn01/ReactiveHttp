@@ -16,7 +16,7 @@ interface IBaseResponse<T> {
 
     val httpData: T
 
-    val isSuccess: Boolean
+    val httpIsSuccess: Boolean
 
 }
 
@@ -34,7 +34,7 @@ class BaseResponse<T>(
     override val httpData: T
         get() = data
 
-    override val isSuccess: Boolean
+    override val httpIsSuccess: Boolean
         get() = code == HttpConfig.CODE_SERVER_SUCCESS || message == "OK"
 
 }

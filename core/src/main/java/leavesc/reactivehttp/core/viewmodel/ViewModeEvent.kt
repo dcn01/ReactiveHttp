@@ -38,30 +38,56 @@ class BaseViewModelEvent(override val action: Int) : BaseEvent(action) {
 
 interface ICoroutineEvent {
 
-    val lCoroutineScope: CoroutineScope
+    //此字段用于声明在 BaseViewModel，BaseRemoteDataSource，BaseView 下和生命周期绑定的协程作用域
+    //推荐的做法是：
+    //1.BaseView 单独声明自己和 View 相关联的作用域
+    //2.BaseViewModel 单独声明自己和 ViewModel 相关联的作用域，
+    //  因为一个 BaseViewModel 可能和多个 BaseView 相关联，所以不要把 BaseView 的 CoroutineScope 传给 BaseViewModel
+    //3.BaseRemoteDataSource 首选使用 BaseViewModel 传过来的 lifecycleCoroutineScope，
+    //  因为 BaseRemoteDataSource 和 BaseViewModel 是一对一的关系
+    val lifecycleCoroutineScope: CoroutineScope
+
+    //此字段用于声明在全局范围下的协程作用域，不和生命周期绑定
+    val globalCoroutineScope: CoroutineScope
+        get() = GlobalScope
 
     val mainDispatcher: CoroutineDispatcher
         get() = Handler(Looper.getMainLooper()).asCoroutineDispatcher()
 
-    private fun defaultLaunch(context: CoroutineContext, block: suspend CoroutineScope.() -> Unit): Job {
-        return lCoroutineScope.launch(context) {
+    private fun defaultLaunch(coroutineScope: CoroutineScope, context: CoroutineContext, block: suspend CoroutineScope.() -> Unit): Job {
+        return coroutineScope.launch(context) {
             block()
         }
     }
 
-    //用于在主线程中启动协程完成操作
+    //用于在 UI 线程完成操作
     fun launchUI(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(Handler(Looper.getMainLooper()).asCoroutineDispatcher(), block)
+        return defaultLaunch(lifecycleCoroutineScope, mainDispatcher, block)
     }
 
     //用于完成 CPU 密集型的操作
     fun launchCPU(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(Dispatchers.Default, block)
+        return defaultLaunch(lifecycleCoroutineScope, Dispatchers.Default, block)
     }
 
     //用于在 IO 密集型的操作
     fun launchIO(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(Dispatchers.IO, block)
+        return defaultLaunch(lifecycleCoroutineScope, Dispatchers.IO, block)
+    }
+
+    //用于在 UI 线程完成操作
+    fun launchUIGlobal(block: suspend CoroutineScope.() -> Unit): Job {
+        return defaultLaunch(globalCoroutineScope, mainDispatcher, block)
+    }
+
+    //用于完成 CPU 密集型的操作
+    fun launchCPUGlobal(block: suspend CoroutineScope.() -> Unit): Job {
+        return defaultLaunch(globalCoroutineScope, Dispatchers.Default, block)
+    }
+
+    //用于在 IO 密集型的操作
+    fun launchIOGlobal(block: suspend CoroutineScope.() -> Unit): Job {
+        return defaultLaunch(globalCoroutineScope, Dispatchers.IO, block)
     }
 
 }

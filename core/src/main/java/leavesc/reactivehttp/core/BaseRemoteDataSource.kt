@@ -3,6 +3,7 @@ package leavesc.reactivehttp.core
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.runBlocking
 import leavesc.reactivehttp.core.config.BaseException
 import leavesc.reactivehttp.core.config.HttpConfig
 import leavesc.reactivehttp.core.config.RequestBadException
@@ -55,15 +56,38 @@ open class BaseRemoteDataSource<T : Any>(private val iBaseViewModelEvent: IBaseV
         }
     }
 
+    //同步请求，可能会抛出异常，外部需做好捕获异常的准备
+    @Throws(BaseException::class)
+    protected fun <T> request(block: suspend () -> IBaseResponse<T>): T {
+        return runBlocking {
+            val asyncIO = asyncIO {
+                block()
+            }
+            try {
+                val response = asyncIO.await()
+                if (response.httpIsSuccess) {
+                    return@runBlocking response.httpData
+                }
+                throw ServerBadException(response.httpMsg, response.httpCode)
+            } catch (throwable: Throwable) {
+                throw generateBaseException(throwable)
+            }
+        }
+    }
+
+    private fun generateBaseException(throwable: Throwable): BaseException {
+        return if (throwable is BaseException) {
+            throwable
+        } else {
+            RequestBadException(throwable.message
+                    ?: "", HttpConfig.CODE_LOCAL_UNKNOWN, throwable)
+        }
+    }
+
     private fun <T> handleException(throwable: Throwable, callback: RequestCallback<T>?) {
         callback?.let {
             launchUI {
-                val exception = if (throwable is BaseException) {
-                    throwable
-                } else {
-                    RequestBadException(throwable.message
-                            ?: "", HttpConfig.CODE_LOCAL_UNKNOWN, throwable)
-                }
+                val exception = generateBaseException(throwable)
                 when (callback) {
                     is RequestMultiplyToastCallback -> {
                         showToast(exception.formatError)

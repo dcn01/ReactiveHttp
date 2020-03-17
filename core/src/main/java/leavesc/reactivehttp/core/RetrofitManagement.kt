@@ -44,15 +44,14 @@ object RetrofitManagement {
                 .build()
     }
 
-    fun <T : Any> getService(clz: Class<T>, host: String): T {
-        if (serviceMap.containsKey(host)) {
-            val obj = serviceMap[host] as? T
-            obj?.let {
-                return obj
-            }
+    internal fun <T : Any> getService(clz: Class<T>, host: String): T {
+        //以 host 路径 + ApiService 的类路径作为 key
+        val key = host + clz.canonicalName
+        if (serviceMap.containsKey(key)) {
+            return serviceMap[key] as T
         }
         val value = createRetrofit(host).create(clz)
-        serviceMap[host] = value
+        serviceMap[key] = value
         return value
     }
 

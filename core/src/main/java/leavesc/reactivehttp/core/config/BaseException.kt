@@ -28,7 +28,7 @@ sealed class BaseException(private val errorMessage: String, private val code: I
                     "数据获取失败，请检查您的网络"
                 }
                 null -> { //服务器异常
-                    "服务器异常"
+                    errorMessage
                 }
                 else -> {
                     "请求失败"

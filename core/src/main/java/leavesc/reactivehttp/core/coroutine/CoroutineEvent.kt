@@ -47,21 +47,6 @@ interface ICoroutineEvent {
     }
 
     //用于在 UI 线程完成操作
-    fun launchUI(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(lifecycleCoroutineScope, mainDispatcher, block)
-    }
-
-    //用于完成 CPU 密集型的操作
-    fun launchCPU(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(lifecycleCoroutineScope, Dispatchers.Default, block)
-    }
-
-    //用于在 IO 密集型的操作
-    fun launchIO(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(lifecycleCoroutineScope, Dispatchers.IO, block)
-    }
-
-    //用于在 UI 线程完成操作
     fun <T> asyncUI(block: suspend CoroutineScope.() -> T): Deferred<T> {
         return defaultAsync(lifecycleCoroutineScope, mainDispatcher, block)
     }
@@ -74,21 +59,6 @@ interface ICoroutineEvent {
     //用于在 IO 密集型的操作
     fun <T> asyncIO(block: suspend CoroutineScope.() -> T): Deferred<T> {
         return defaultAsync(lifecycleCoroutineScope, Dispatchers.IO, block)
-    }
-
-    //用于在 UI 线程完成操作
-    fun launchUIGlobal(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(globalCoroutineScope, mainDispatcher, block)
-    }
-
-    //用于完成 CPU 密集型的操作
-    fun launchCPUGlobal(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(globalCoroutineScope, Dispatchers.Default, block)
-    }
-
-    //用于在 IO 密集型的操作
-    fun launchIOGlobal(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(globalCoroutineScope, Dispatchers.IO, block)
     }
 
     //用于在 UI 线程完成操作

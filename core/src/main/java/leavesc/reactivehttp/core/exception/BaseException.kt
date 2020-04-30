@@ -1,6 +1,6 @@
 package leavesc.reactivehttp.core.exception
 
-import leavesc.reactivehttp.core.holder.HttpActionHolder
+import leavesc.reactivehttp.core.config.HttpConfig
 
 /**
  * 作者：leavesC
@@ -20,7 +20,7 @@ sealed class BaseException(val errorMessage: String, val code: Int, val realExce
 
     //格式化好的异常信息
     val formatError: String
-        get() = HttpActionHolder.formatExceptionFun(this)
+        get() = HttpConfig.formatExceptionFun(this)
 
 }
 

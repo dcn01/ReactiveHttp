@@ -5,25 +5,28 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
 import leavesc.reactivehttp.core.bean.IHttpResBean
+import leavesc.reactivehttp.core.callback.RequestCallback
+import leavesc.reactivehttp.core.callback.RequestMultiplyCallback
+import leavesc.reactivehttp.core.callback.RequestMultiplyToastCallback
 import leavesc.reactivehttp.core.config.HttpConfig
 import leavesc.reactivehttp.core.coroutine.ICoroutineEvent
 import leavesc.reactivehttp.core.exception.BaseException
 import leavesc.reactivehttp.core.exception.LocalBadException
 import leavesc.reactivehttp.core.exception.ServerBadException
-import leavesc.reactivehttp.core.viewmodel.IBaseViewModelEvent
+import leavesc.reactivehttp.core.viewmodel.IUIActionEvent
 
 /**
  * 作者：leavesC
  * 时间：2019/5/31 11:16
  * 描述：
  */
-open class BaseRemoteDataSource<T : Any>(private val iBaseViewModelEvent: IBaseViewModelEvent?, private val serviceApiClass: Class<T>) : ICoroutineEvent {
+open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEvent?, private val serviceApiClass: Class<T>) : ICoroutineEvent {
 
-    protected fun getService(host: String = HttpConfig.BASE_URL_MAP): T {
+    protected fun getService(host: String = RetrofitManagement.serverUrl): T {
         return RetrofitManagement.getService(serviceApiClass, host)
     }
 
-    override val lifecycleCoroutineScope: CoroutineScope = iBaseViewModelEvent?.lifecycleCoroutineScope
+    override val lifecycleCoroutineScope: CoroutineScope = iActionEvent?.lifecycleCoroutineScope
             ?: GlobalScope
 
     protected fun <T> execute(block: suspend () -> IHttpResBean<T>, callback: RequestCallback<T>?, quietly: Boolean = false): Job {
@@ -92,18 +95,10 @@ open class BaseRemoteDataSource<T : Any>(private val iBaseViewModelEvent: IBaseV
                 when (callback) {
                     is RequestMultiplyToastCallback -> {
                         showToast(exception.formatError)
-                        if (it is BaseException) {
-                            callback.onFail(it)
-                        } else {
-                            callback.onFail(exception)
-                        }
+                        callback.onFail(exception)
                     }
                     is RequestMultiplyCallback -> {
-                        if (it is BaseException) {
-                            callback.onFail(it)
-                        } else {
-                            callback.onFail(exception)
-                        }
+                        callback.onFail(exception)
                     }
                     else -> {
                         showToast(exception.formatError)
@@ -114,15 +109,15 @@ open class BaseRemoteDataSource<T : Any>(private val iBaseViewModelEvent: IBaseV
     }
 
     private fun showLoading() {
-        iBaseViewModelEvent?.showLoading()
+        iActionEvent?.showLoading()
     }
 
     private fun dismissLoading() {
-        iBaseViewModelEvent?.dismissLoading()
+        iActionEvent?.dismissLoading()
     }
 
     private fun showToast(msg: String) {
-        iBaseViewModelEvent?.showToast(msg)
+        iActionEvent?.showToast(msg)
     }
 
 }

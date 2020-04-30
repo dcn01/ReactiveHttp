@@ -3,14 +3,11 @@ package leavesc.reactivehttp.weather.core.view
 import android.annotation.SuppressLint
 import android.app.ProgressDialog
 import android.content.Context
-import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelProviders
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
-import leavesc.reactivehttp.core.viewmodel.BaseViewModel
-import leavesc.reactivehttp.core.viewmodel.IBaseViewModelEventObserver
+import leavesc.reactivehttp.core.viewmodel.IUIActionEventObserver
 
 /**
  * 作者：leavesC
@@ -18,7 +15,7 @@ import leavesc.reactivehttp.core.viewmodel.IBaseViewModelEventObserver
  * 描述：
  */
 @SuppressLint("Registered")
-abstract class BaseActivity : AppCompatActivity(), IBaseViewModelEventObserver {
+abstract class BaseActivity : AppCompatActivity(), IUIActionEventObserver {
 
     override val lifecycleCoroutineScope: CoroutineScope = MainScope()
 
@@ -29,11 +26,6 @@ abstract class BaseActivity : AppCompatActivity(), IBaseViewModelEventObserver {
         get() = this
 
     private var loadDialog: ProgressDialog? = null
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        initViewModelEvent()
-    }
 
     override fun showLoading(msg: String) {
         if (loadDialog == null) {
@@ -59,8 +51,5 @@ abstract class BaseActivity : AppCompatActivity(), IBaseViewModelEventObserver {
     override fun finishView() {
         finish()
     }
-
-    fun <T : BaseViewModel> getViewModel(clazz: Class<T>) =
-            ViewModelProviders.of(this).get(clazz)
 
 }

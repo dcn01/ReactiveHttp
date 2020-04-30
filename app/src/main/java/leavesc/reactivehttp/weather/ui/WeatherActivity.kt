@@ -4,7 +4,6 @@ import android.os.Bundle
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_weather.*
-import leavesc.reactivehttp.core.viewmodel.BaseViewModel
 import leavesc.reactivehttp.weather.R
 import leavesc.reactivehttp.weather.adapter.WeatherAdapter
 import leavesc.reactivehttp.weather.core.cache.AreaCache
@@ -22,7 +21,11 @@ import leavesc.reactivehttp.weather.core.viewmodel.WeatherViewModel
  */
 class WeatherActivity : BaseActivity() {
 
-    private lateinit var weatherViewModel: WeatherViewModel
+    private val weatherViewModel by getViewModel(WeatherViewModel::class.java) {
+        forecastsBeanLiveData.observe(it, Observer {
+            showWeather(it)
+        })
+    }
 
     private val castsBeanList = mutableListOf<CastsBean>()
 
@@ -44,14 +47,6 @@ class WeatherActivity : BaseActivity() {
     override fun onResume() {
         super.onResume()
         weatherViewModel.getWeather(AreaCache.getAdCode(this))
-    }
-
-    override fun initViewModel(): BaseViewModel? {
-        weatherViewModel = getViewModel(WeatherViewModel::class.java)
-        weatherViewModel.forecastsBeanLiveData.observe(this, Observer {
-            showWeather(it)
-        })
-        return weatherViewModel
     }
 
     private fun showWeather(forecastsBean: ForecastsBean) {

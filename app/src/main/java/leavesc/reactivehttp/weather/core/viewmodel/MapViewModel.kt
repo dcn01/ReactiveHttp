@@ -1,7 +1,7 @@
 package leavesc.reactivehttp.weather.core.viewmodel
 
 import androidx.lifecycle.MutableLiveData
-import leavesc.reactivehttp.core.RequestCallback
+import leavesc.reactivehttp.core.callback.RequestCallback
 import leavesc.reactivehttp.core.viewmodel.BaseViewModel
 import leavesc.reactivehttp.weather.core.http.MapDataSource
 import leavesc.reactivehttp.weather.core.model.DistrictBean

@@ -6,7 +6,6 @@ import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_map.*
 import kotlinx.android.synthetic.main.layout_top_bar.*
-import leavesc.reactivehttp.core.viewmodel.BaseViewModel
 import leavesc.reactivehttp.weather.R
 import leavesc.reactivehttp.weather.adapter.PlaceAdapter
 import leavesc.reactivehttp.weather.core.cache.AreaCache
@@ -26,13 +25,39 @@ class MapActivity : BaseActivity() {
 
     private val dataList = mutableListOf<DistrictBean>()
 
-    private val placeAdapter = PlaceAdapter(dataList, object : PlaceAdapter.OnClickListener {
+    private val mapViewModel by getViewModel(MapViewModel::class.java) {
+        stateLiveData.observe(it, Observer {
+            when (it) {
+                MapViewModel.TYPE_PROVINCE -> {
+                    tv_topBarTitle.text = "省份"
+                }
+                MapViewModel.TYPE_CITY -> {
+                    tv_topBarTitle.text = "城市"
+                }
+                MapViewModel.TYPE_COUNTY -> {
+                    tv_topBarTitle.text = "区县"
+                }
+            }
+        })
+        realLiveData.observe(it, Observer {
+            dataList.clear()
+            dataList.addAll(it)
+            placeAdapter.notifyDataSetChanged()
+        })
+        adCodeSelectedLiveData.observe(it, Observer {
+            it?.let { adCode ->
+                AreaCache.saveAdCode(this@MapActivity, adCode)
+            }
+            startActivity(WeatherActivity::class.java)
+            finish()
+        })
+    }
+
+    private val placeAdapter: PlaceAdapter = PlaceAdapter(dataList, object : PlaceAdapter.OnClickListener {
         override fun onClick(position: Int) {
             mapViewModel.onPlaceClicked(position)
         }
     })
-
-    private lateinit var mapViewModel: MapViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,36 +73,6 @@ class MapActivity : BaseActivity() {
         )
         rv_placeList.adapter = placeAdapter
         mapViewModel.getProvince()
-    }
-
-    override fun initViewModel(): BaseViewModel? {
-        mapViewModel = getViewModel(MapViewModel::class.java)
-        mapViewModel.stateLiveData.observe(this, Observer {
-            when (it) {
-                MapViewModel.TYPE_PROVINCE -> {
-                    tv_topBarTitle.text = "省份"
-                }
-                MapViewModel.TYPE_CITY -> {
-                    tv_topBarTitle.text = "城市"
-                }
-                MapViewModel.TYPE_COUNTY -> {
-                    tv_topBarTitle.text = "区县"
-                }
-            }
-        })
-        mapViewModel.realLiveData.observe(this, Observer<List<DistrictBean>> {
-            dataList.clear()
-            dataList.addAll(it)
-            placeAdapter.notifyDataSetChanged()
-        })
-        mapViewModel.adCodeSelectedLiveData.observe(this, Observer {
-            it?.let { adCode ->
-                AreaCache.saveAdCode(this@MapActivity, adCode)
-            }
-            startActivity(WeatherActivity::class.java)
-            finish()
-        })
-        return mapViewModel
     }
 
     override fun onBackPressed() {

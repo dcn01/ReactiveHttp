@@ -1,9 +1,8 @@
 package leavesc.reactivehttp.core
 
 import android.content.Context
+import leavesc.reactivehttp.core.config.HttpConfig
 import leavesc.reactivehttp.core.exception.BaseException
-import leavesc.reactivehttp.core.holder.ContextHolder
-import leavesc.reactivehttp.core.holder.HttpActionHolder
 import okhttp3.OkHttpClient
 import java.io.InterruptedIOException
 import java.net.ConnectException
@@ -27,8 +26,8 @@ class ReactiveHttp internal constructor(builder: Builder) {
     private val okHttpClient = builder.okHttClient ?: createDefaultOkHttpClient()
 
     fun init() {
-        ContextHolder.context = context
-        HttpActionHolder.formatExceptionFun = formatExceptionFun
+        HttpConfig.context = context
+        HttpConfig.formatExceptionFun = formatExceptionFun
         RetrofitManagement.serverUrl = serverUrl
         RetrofitManagement.okHttpClient = okHttpClient
     }

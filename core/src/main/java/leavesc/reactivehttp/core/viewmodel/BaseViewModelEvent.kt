@@ -5,6 +5,8 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStoreOwner
 import leavesc.reactivehttp.core.coroutine.ICoroutineEvent
 
 /**
@@ -12,27 +14,18 @@ import leavesc.reactivehttp.core.coroutine.ICoroutineEvent
  * 时间：2020/4/30 15:23
  * 描述：
  */
-open class BaseEvent(open val action: Int)
+sealed class BaseActionEvent
 
-class BaseViewModelEvent(override val action: Int) : BaseEvent(action) {
+class ShowLoadingEvent(val message: String) : BaseActionEvent()
 
-    companion object {
+object DismissLoadingEvent : BaseActionEvent()
 
-        const val SHOW_LOADING_DIALOG = 1
+object FinishViewEvent : BaseActionEvent()
 
-        const val DISMISS_LOADING_DIALOG = 2
+class ShowToastEvent(val message: String) : BaseActionEvent()
 
-        const val SHOW_TOAST = 3
-
-        const val FINISH = 4
-
-    }
-
-    var message: String = ""
-
-}
-
-interface IBaseViewModelEvent : ICoroutineEvent {
+//用于定义 View 和  ViewModel 均需要实现的一些 UI 层行为
+interface IUIActionEvent : ICoroutineEvent {
 
     fun showLoading(msg: String)
 
@@ -48,55 +41,44 @@ interface IBaseViewModelEvent : ICoroutineEvent {
 
 }
 
-interface IBaseViewModelEventObserver : IBaseViewModelEvent {
+interface IUIActionEventObserver : IUIActionEvent {
 
     val lContext: Context?
 
     val lLifecycleOwner: LifecycleOwner
 
-    fun initViewModel(): BaseViewModel? {
-        return null
-    }
-
-    fun initViewModelList(): MutableList<BaseViewModel>? {
-        return null
-    }
-
-    fun initViewModelEvent() {
-        val initViewModelList = initViewModelList()
-        if (initViewModelList.isNullOrEmpty()) {
-            initViewModel()?.let {
-                observeEvent(it)
-            }
-        } else {
-            observeEventList(initViewModelList)
+    fun <T : BaseViewModel> getViewModel(clazz: Class<T>, initializer: (T.(lifecycleOwner: LifecycleOwner) -> Unit)? = null): Lazy<T> {
+        return lazy {
+            getViewModelFast(clazz, initializer)
         }
     }
 
-    private fun observeEvent(baseViewModel: BaseViewModel) {
-        baseViewModel.baseActionEvent.observe(lLifecycleOwner, Observer { it ->
-            it?.let {
-                when (it.action) {
-                    BaseViewModelEvent.SHOW_LOADING_DIALOG -> {
+    private fun <T : BaseViewModel> getViewModelFast(clazz: Class<T>, initializer: (T.(lifecycleOwner: LifecycleOwner) -> Unit)? = null): T {
+        return when (val localValue = lLifecycleOwner) {
+            is ViewModelStoreOwner -> {
+                ViewModelProvider(localValue).get(clazz)
+            }
+            else -> {
+                clazz.newInstance();
+            }
+        }.apply {
+            vmActionEvent.observe(lLifecycleOwner, Observer {
+                when (it) {
+                    is ShowLoadingEvent -> {
                         showLoading(it.message)
                     }
-                    BaseViewModelEvent.DISMISS_LOADING_DIALOG -> {
+                    DismissLoadingEvent -> {
                         dismissLoading()
                     }
-                    BaseViewModelEvent.SHOW_TOAST -> {
-                        showToast(it.message)
-                    }
-                    BaseViewModelEvent.FINISH -> {
+                    FinishViewEvent -> {
                         finishView()
                     }
+                    is ShowToastEvent -> {
+                        showToast(it.message)
+                    }
                 }
-            }
-        })
-    }
-
-    private fun observeEventList(viewModelList: MutableList<BaseViewModel>) {
-        for (viewModel in viewModelList) {
-            observeEvent(viewModel)
+            })
+            initializer?.invoke(this, lLifecycleOwner)
         }
     }
 

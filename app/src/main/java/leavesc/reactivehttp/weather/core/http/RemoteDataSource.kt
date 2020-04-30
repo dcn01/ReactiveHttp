@@ -1,8 +1,8 @@
 package leavesc.reactivehttp.weather.core.http
 
 import leavesc.reactivehttp.core.BaseRemoteDataSource
-import leavesc.reactivehttp.core.RequestCallback
-import leavesc.reactivehttp.core.viewmodel.IBaseViewModelEvent
+import leavesc.reactivehttp.core.callback.RequestCallback
+import leavesc.reactivehttp.core.viewmodel.IUIActionEvent
 import leavesc.reactivehttp.weather.core.model.DistrictBean
 import leavesc.reactivehttp.weather.core.model.ForecastsBean
 
@@ -11,7 +11,7 @@ import leavesc.reactivehttp.weather.core.model.ForecastsBean
  * 时间：2019/5/31 14:27
  * 描述：
  */
-class MapDataSource(baseViewModelEventEvent: IBaseViewModelEvent) : BaseRemoteDataSource<ApiService>(baseViewModelEventEvent, ApiService::class.java) {
+class MapDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
 
     fun getProvince(callback: RequestCallback<List<DistrictBean>>) {
         execute({ getService().getProvince() }, callback)
@@ -27,7 +27,7 @@ class MapDataSource(baseViewModelEventEvent: IBaseViewModelEvent) : BaseRemoteDa
 
 }
 
-class WeatherDataSource(baseViewModelEventEvent: IBaseViewModelEvent) : BaseRemoteDataSource<ApiService>(baseViewModelEventEvent, ApiService::class.java) {
+class WeatherDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
 
     fun getWeather(city: String, callback: RequestCallback<List<ForecastsBean>>) {
         execute({ getService().getWeather(city) }, callback)

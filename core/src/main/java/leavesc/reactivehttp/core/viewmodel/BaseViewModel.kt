@@ -10,32 +10,26 @@ import kotlinx.coroutines.GlobalScope
  * 时间：2019/5/31 9:39
  * 描述：
  */
-open class BaseViewModel : ViewModel(), IBaseViewModelEvent {
+open class BaseViewModel : ViewModel(), IUIActionEvent {
 
     override val lifecycleCoroutineScope: CoroutineScope = GlobalScope
 
-    val baseActionEvent = MutableLiveData<BaseViewModelEvent>()
+    val vmActionEvent = MutableLiveData<BaseActionEvent>()
 
     override fun showLoading(msg: String) {
-        val event = BaseViewModelEvent(BaseViewModelEvent.SHOW_LOADING_DIALOG)
-        event.message = msg
-        baseActionEvent.value = event
+        vmActionEvent.value = ShowLoadingEvent(msg)
     }
 
     override fun dismissLoading() {
-        val event = BaseViewModelEvent(BaseViewModelEvent.DISMISS_LOADING_DIALOG)
-        baseActionEvent.value = event
+        vmActionEvent.value = DismissLoadingEvent
     }
 
     override fun showToast(msg: String) {
-        val event = BaseViewModelEvent(BaseViewModelEvent.SHOW_TOAST)
-        event.message = msg
-        baseActionEvent.value = event
+        vmActionEvent.value = ShowToastEvent(msg)
     }
 
     override fun finishView() {
-        val event = BaseViewModelEvent(BaseViewModelEvent.FINISH)
-        baseActionEvent.value = event
+        vmActionEvent.value = FinishViewEvent
     }
 
 }

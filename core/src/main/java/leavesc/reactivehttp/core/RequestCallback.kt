@@ -1,6 +1,6 @@
 package leavesc.reactivehttp.core
 
-import leavesc.reactivehttp.core.config.BaseException
+import leavesc.reactivehttp.core.exception.BaseException
 
 /**
  * 作者：leavesC

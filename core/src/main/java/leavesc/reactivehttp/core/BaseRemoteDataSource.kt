@@ -4,12 +4,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.runBlocking
-import leavesc.reactivehttp.core.config.BaseException
+import leavesc.reactivehttp.core.bean.IHttpResBean
 import leavesc.reactivehttp.core.config.HttpConfig
-import leavesc.reactivehttp.core.config.RequestBadException
-import leavesc.reactivehttp.core.config.ServerBadException
+import leavesc.reactivehttp.core.coroutine.ICoroutineEvent
+import leavesc.reactivehttp.core.exception.BaseException
+import leavesc.reactivehttp.core.exception.LocalBadException
+import leavesc.reactivehttp.core.exception.ServerBadException
 import leavesc.reactivehttp.core.viewmodel.IBaseViewModelEvent
-import leavesc.reactivehttp.core.viewmodel.ICoroutineEvent
 
 /**
  * 作者：leavesC
@@ -25,7 +26,7 @@ open class BaseRemoteDataSource<T : Any>(private val iBaseViewModelEvent: IBaseV
     override val lifecycleCoroutineScope: CoroutineScope = iBaseViewModelEvent?.lifecycleCoroutineScope
             ?: GlobalScope
 
-    protected fun <T> execute(block: suspend () -> IBaseResponse<T>, callback: RequestCallback<T>?, quietly: Boolean = false): Job {
+    protected fun <T> execute(block: suspend () -> IHttpResBean<T>, callback: RequestCallback<T>?, quietly: Boolean = false): Job {
         val temp = true
         return launchIO {
             try {
@@ -58,7 +59,7 @@ open class BaseRemoteDataSource<T : Any>(private val iBaseViewModelEvent: IBaseV
 
     //同步请求，可能会抛出异常，外部需做好捕获异常的准备
     @Throws(BaseException::class)
-    protected fun <T> request(block: suspend () -> IBaseResponse<T>): T {
+    protected fun <T> request(block: suspend () -> IHttpResBean<T>): T {
         return runBlocking {
             val asyncIO = asyncIO {
                 block()
@@ -79,7 +80,7 @@ open class BaseRemoteDataSource<T : Any>(private val iBaseViewModelEvent: IBaseV
         return if (throwable is BaseException) {
             throwable
         } else {
-            RequestBadException(throwable.message
+            LocalBadException(throwable.message
                     ?: "", HttpConfig.CODE_LOCAL_UNKNOWN, throwable)
         }
     }

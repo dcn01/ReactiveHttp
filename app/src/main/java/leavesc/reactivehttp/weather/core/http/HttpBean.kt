@@ -1,29 +1,18 @@
-package leavesc.reactivehttp.core
+package leavesc.reactivehttp.weather.core.http
 
 import com.google.gson.annotations.SerializedName
+import leavesc.reactivehttp.core.bean.IHttpResBean
 import leavesc.reactivehttp.core.config.HttpConfig
 
 /**
- * 作者：leavesC
- * 时间：2019/5/31 10:58
+ * 作者：CZY
+ * 时间：2020/4/30 15:22
  * 描述：
  */
-interface IBaseResponse<T> {
-
-    val httpCode: Int
-
-    val httpMsg: String
-
-    val httpData: T
-
-    val httpIsSuccess: Boolean
-
-}
-
-class BaseResponse<T>(
+class HttpResBean<T>(
         @SerializedName("status") var code: Int = 0,
         @SerializedName("info") var message: String? = null,
-        @SerializedName("districts", alternate = ["forecasts"]) var data: T) : IBaseResponse<T> {
+        @SerializedName("districts", alternate = ["forecasts"]) var data: T) : IHttpResBean<T> {
 
     override val httpCode: Int
         get() = code

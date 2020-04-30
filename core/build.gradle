@@ -30,18 +30,10 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.core:core-ktx:1.2.0'
-
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
     api 'com.squareup.retrofit2:retrofit:2.7.2'
     implementation 'com.squareup.retrofit2:converter-gson:2.7.2'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.4.1'
-
-    //如果不想引入 Monitor 的话，以下三行可以删除
-    implementation 'com.github.leavesC:Monitor:1.0.10'
-    implementation 'androidx.room:room-runtime:2.2.5'
-    kapt 'androidx.room:room-compiler:2.2.5'
-
     api 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.5'
     api 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.5'
 }

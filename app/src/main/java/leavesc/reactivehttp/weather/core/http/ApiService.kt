@@ -1,5 +1,6 @@
 package leavesc.reactivehttp.weather.core.http
 
+import leavesc.reactivehttp.weather.core.http.base.HttpResBean
 import leavesc.reactivehttp.weather.core.model.DistrictBean
 import leavesc.reactivehttp.weather.core.model.ForecastsBean
 import retrofit2.http.GET

@@ -1,11 +1,11 @@
-package leavesc.reactivehttp.core.config
+package leavesc.reactivehttp.weather.core.http.base
 
 /**
- * 作者：leavesC
- * 时间：2019/5/31 10:49
+ * 作者：CZY
+ * 时间：2020/4/30 17:39
  * 描述：
  */
-internal object HttpConfig {
+object HttpConfig {
 
     const val BASE_URL_MAP = "https://restapi.amap.com/v3/"
 

@@ -1,9 +1,15 @@
 package leavesc.reactivehttp.core
 
 import android.content.Context
-import leavesc.reactivehttp.core.config.HttpConfig
 import leavesc.reactivehttp.core.exception.BaseException
+import leavesc.reactivehttp.core.holder.ContextHolder
+import leavesc.reactivehttp.core.holder.HttpActionHolder
 import okhttp3.OkHttpClient
+import java.io.InterruptedIOException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+import java.util.concurrent.TimeUnit
 
 /**
  * 作者：CZY
@@ -12,13 +18,46 @@ import okhttp3.OkHttpClient
  */
 class ReactiveHttp internal constructor(builder: Builder) {
 
-    val context = builder.context
+    private val context = builder.context.applicationContext
 
-    val serverUrl = builder.serverUrl
+    private val formatExceptionFun = builder.formatExceptionFun ?: ::formatException
 
-    val okHttpClient = builder.okHttClient ?: OkHttpClient()
+    private val serverUrl = builder.serverUrl
 
-    val formatExceptionFun = builder.formatExceptionFun ?: HttpConfig::formatException
+    private val okHttpClient = builder.okHttClient ?: createDefaultOkHttpClient()
+
+    fun init() {
+        ContextHolder.context = context
+        HttpActionHolder.formatExceptionFun = formatExceptionFun
+        RetrofitManagement.serverUrl = serverUrl
+        RetrofitManagement.okHttpClient = okHttpClient
+    }
+
+    private fun createDefaultOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+                .readTimeout(10000L, TimeUnit.MILLISECONDS)
+                .writeTimeout(10000L, TimeUnit.MILLISECONDS)
+                .connectTimeout(10000L, TimeUnit.MILLISECONDS)
+                .retryOnConnectionFailure(true).build()
+    }
+
+    private fun formatException(baseException: BaseException): String {
+        return when (baseException.realException) {
+            is ConnectException, is SocketTimeoutException, is InterruptedIOException -> {
+                "连接超时！请检查您的网络设置"
+            }
+            is UnknownHostException -> {
+                "数据获取失败，请检查您的网络"
+            }
+            null -> {
+                //服务器异常
+                baseException.errorMessage
+            }
+            else -> {
+                "请求过程抛出异常"
+            }
+        }
+    }
 
     class Builder constructor(internal val context: Context, internal val serverUrl: String) {
 
@@ -31,12 +70,14 @@ class ReactiveHttp internal constructor(builder: Builder) {
             return ReactiveHttp(this)
         }
 
-        fun okHttClient(httpClient: OkHttpClient) {
+        fun okHttClient(httpClient: OkHttpClient): Builder {
             okHttClient = httpClient
+            return this
         }
 
-        fun formatException(function: (baseException: BaseException) -> String) {
+        fun formatException(function: (baseException: BaseException) -> String): Builder {
             formatExceptionFun = function
+            return this
         }
 
     }

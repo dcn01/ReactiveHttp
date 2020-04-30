@@ -1,8 +1,7 @@
-package leavesc.reactivehttp.weather.core.http
+package leavesc.reactivehttp.weather.core.http.base
 
 import com.google.gson.annotations.SerializedName
 import leavesc.reactivehttp.core.bean.IHttpResBean
-import leavesc.reactivehttp.core.config.HttpConfig
 
 /**
  * 作者：CZY

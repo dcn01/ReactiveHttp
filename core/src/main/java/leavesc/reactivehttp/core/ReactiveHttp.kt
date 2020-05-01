@@ -15,7 +15,7 @@ import java.util.concurrent.TimeUnit
  * 时间：2020/4/30 15:29
  * 描述：
  */
-class ReactiveHttp internal constructor(builder: Builder) {
+class ReactiveHttp private constructor(builder: Builder) {
 
     private val context = builder.context.applicationContext
 

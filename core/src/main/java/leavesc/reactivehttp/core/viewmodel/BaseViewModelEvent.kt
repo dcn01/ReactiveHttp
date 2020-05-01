@@ -1,5 +1,6 @@
 package leavesc.reactivehttp.core.viewmodel
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
@@ -88,7 +89,7 @@ interface IUIActionEventObserver : IUIActionEvent {
         }
     }
 
-    fun <T> startActivity(clazz: Class<T>) {
+    fun <T : Activity> startActivity(clazz: Class<T>) {
         lContext?.apply {
             startActivity(Intent(this, clazz))
         }

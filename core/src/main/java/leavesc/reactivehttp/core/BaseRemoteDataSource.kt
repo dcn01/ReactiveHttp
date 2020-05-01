@@ -38,6 +38,7 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
                         showLoading()
                     }
                 }
+                callback?.onStart()
                 val response = block()
                 callback?.let {
                     if (response.httpIsSuccess) {
@@ -45,17 +46,18 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
                             callback.onSuccess(response.httpData)
                         }
                     } else {
-                        handleException(ServerBadException(response.httpMsg, response.httpCode), callback)
+                        throw ServerBadException(response.httpMsg, response.httpCode)
                     }
                 }
             } catch (throwable: Throwable) {
-                handleException(throwable, callback)
+                handleException(generateBaseException(throwable), callback)
             } finally {
                 if (!temp) {
                     launchUI {
                         dismissLoading()
                     }
                 }
+                callback?.onFinally()
             }
         }
     }
@@ -79,7 +81,13 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
         }
     }
 
-    private fun generateBaseException(throwable: Throwable): BaseException {
+    /**
+     * 如果外部想要对 Throwable 进行特殊处理，则可以重写此方法，用于改变异常类型
+     * 例如，在 token 失效时接口一般是会返回特定一个 httpCode 用于表明移动端需要去更新 token 了
+     * 此时外部就可以实现一个 BaseException 的子类 TokenInvalidException 并在此处返回
+     * 从而做到接口异常原因强提醒的效果，而不用去纠结 httpCode 到底是多少
+     */
+    protected open fun generateBaseException(throwable: Throwable): BaseException {
         return if (throwable is BaseException) {
             throwable
         } else {
@@ -88,10 +96,9 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
         }
     }
 
-    private fun <T> handleException(throwable: Throwable, callback: RequestCallback<T>?) {
+    private fun <T> handleException(exception: BaseException, callback: RequestCallback<T>?) {
         callback?.let {
             launchUI {
-                val exception = generateBaseException(throwable)
                 when (callback) {
                     is RequestMultiplyToastCallback -> {
                         showToast(exception.formatError)

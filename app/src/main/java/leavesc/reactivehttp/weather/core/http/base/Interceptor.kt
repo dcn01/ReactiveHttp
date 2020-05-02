@@ -1,6 +1,5 @@
 package leavesc.reactivehttp.weather.core.http.base
 
-import leavesc.reactivehttp.weather.core.http.base.HttpConfig
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException

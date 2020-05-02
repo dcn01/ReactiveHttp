@@ -41,7 +41,7 @@ class ReactiveHttp private constructor(builder: Builder) {
     }
 
     private fun formatException(baseException: BaseException): String {
-        return when (baseException.realException) {
+        return when (baseException.localException) {
             is ConnectException, is SocketTimeoutException, is InterruptedIOException -> {
                 "连接超时！请检查您的网络设置"
             }

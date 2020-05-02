@@ -8,11 +8,11 @@ import leavesc.reactivehttp.core.exception.BaseException
  * 时间：2019/5/31 10:49
  * 描述：
  */
-object HttpConfig {
+internal object HttpConfig {
 
-    internal lateinit var context: Context
+    lateinit var context: Context
 
-    internal lateinit var formatExceptionFun: (baseException: BaseException) -> String
+    lateinit var formatExceptionFun: (baseException: BaseException) -> String
 
     //本地定义的 code 以 CODE_LOCAL 开头
 

@@ -1,5 +1,6 @@
 package leavesc.reactivehttp.core
 
+import android.util.Log
 import kotlinx.coroutines.*
 import leavesc.reactivehttp.core.bean.IHttpResBean
 import leavesc.reactivehttp.core.callback.RequestCallback
@@ -38,11 +39,15 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
                 callback?.let {
                     if (response.httpIsSuccess) {
                         callback.onSuccess(response.httpData)
+                        withIO {
+                            callback.onSuccessIO(response.httpData)
+                        }
                     } else {
                         throw ServerBadException(response.httpMsg, response.httpCode)
                     }
                 }
             } catch (throwable: Throwable) {
+                Log.e("TAG", "message: " + throwable.message)
                 handleException(generateBaseException(throwable), callback)
             } finally {
                 callback?.onFinally()

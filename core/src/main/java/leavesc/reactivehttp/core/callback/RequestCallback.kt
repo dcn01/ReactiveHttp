@@ -15,12 +15,23 @@ interface RequestCallback<T> {
 
     }
 
+    //在 onFinally 方法之前执行，当执行完毕后再调用 onFinally 方法
+    //Main 线程调用
+    fun onSuccess(data: T) {
+
+    }
+
+    //在 onFinally 方法之前执行，当执行完毕后再调用 onFinally 方法
+    //考虑到网络请求成功后有需要将数据保存到数据库的需求，所以此方法会在 IO 线程进行调用
+    //注意外部不要在此处另开子线程
+    suspend fun onSuccessIO(data: T) {
+
+    }
+
     //在网络请求结束之后（不管请求成功与否）且隐藏 Loading 之前执行
     fun onFinally() {
 
     }
-
-    fun onSuccess(data: T)
 
 }
 

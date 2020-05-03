@@ -1,10 +1,14 @@
 package leavesc.reactivehttp.weather.core.http
 
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import leavesc.reactivehttp.core.BaseRemoteDataSource
 import leavesc.reactivehttp.core.callback.RequestCallback
 import leavesc.reactivehttp.core.viewmodel.IUIActionEvent
+import leavesc.reactivehttp.weather.core.http.base.HttpResBean
 import leavesc.reactivehttp.weather.core.model.DistrictBean
 import leavesc.reactivehttp.weather.core.model.ForecastsBean
+import kotlin.random.Random
 
 /**
  * 作者：leavesC
@@ -38,6 +42,23 @@ class WeatherDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource
     fun getWeather(city: String, callback: RequestCallback<List<ForecastsBean>>) {
         execute(callback) {
             getService().getWeather(city)
+        }
+    }
+
+}
+
+class TestDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
+
+    private suspend fun testDelay(): HttpResBean<String> {
+        withIO {
+            delay(10000)
+        }
+        return HttpResBean(Random.nextInt(0, 2), "msg", "data coming")
+    }
+
+    fun testDelay(callback: RequestCallback<String>): Job {
+        return execute(callback, showLoading = false) {
+            testDelay()
         }
     }
 

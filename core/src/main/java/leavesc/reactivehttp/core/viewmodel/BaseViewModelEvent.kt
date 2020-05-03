@@ -15,7 +15,7 @@ import leavesc.reactivehttp.core.coroutine.ICoroutineEvent
  * 时间：2020/4/30 15:23
  * 描述：
  */
-sealed class BaseActionEvent
+open class BaseActionEvent
 
 class ShowLoadingEvent(val message: String) : BaseActionEvent()
 
@@ -66,16 +66,16 @@ interface IUIActionEventObserver : IUIActionEvent {
             vmActionEvent.observe(lLifecycleOwner, Observer {
                 when (it) {
                     is ShowLoadingEvent -> {
-                        showLoading(it.message)
+                        this@IUIActionEventObserver.showLoading(it.message)
                     }
                     DismissLoadingEvent -> {
-                        dismissLoading()
+                        this@IUIActionEventObserver.dismissLoading()
                     }
                     FinishViewEvent -> {
-                        finishView()
+                        this@IUIActionEventObserver.finishView()
                     }
                     is ShowToastEvent -> {
-                        showToast(it.message)
+                        this@IUIActionEventObserver.showToast(it.message)
                     }
                 }
             })
@@ -84,8 +84,10 @@ interface IUIActionEventObserver : IUIActionEvent {
     }
 
     override fun showToast(msg: String) {
-        lContext?.let {
-            Toast.makeText(it, msg, Toast.LENGTH_SHORT).show()
+        if (msg.isNotBlank()) {
+            lContext?.let {
+                Toast.makeText(it, msg, Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

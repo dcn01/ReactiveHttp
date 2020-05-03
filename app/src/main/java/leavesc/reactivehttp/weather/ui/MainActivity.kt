@@ -26,7 +26,7 @@ class MainActivity : BaseActivity() {
             finish()
         }
         btn_request.setOnClickListener {
-
+            startActivity(TestActivity::class.java)
         }
     }
 

@@ -1,7 +1,6 @@
 package leavesc.reactivehttp.weather
 
 import android.app.Application
-import leavesc.hello.monitor.MonitorInterceptor
 import leavesc.reactivehttp.core.ReactiveHttp
 import leavesc.reactivehttp.weather.core.http.base.FilterInterceptor
 import leavesc.reactivehttp.weather.core.http.base.HttpConfig
@@ -32,8 +31,6 @@ class MainApplication : Application() {
         val httpLoggingInterceptor = HttpLoggingInterceptor()
         httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
         builder.addInterceptor(httpLoggingInterceptor)
-        //这是我的另外一个开源库：https://github.com/leavesC/Monitor
-        builder.addInterceptor(MonitorInterceptor(this))
         builder.addInterceptor(FilterInterceptor())
         return builder.build()
     }

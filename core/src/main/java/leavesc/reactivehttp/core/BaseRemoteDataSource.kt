@@ -1,9 +1,6 @@
 package leavesc.reactivehttp.core
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import leavesc.reactivehttp.core.bean.IHttpResBean
 import leavesc.reactivehttp.core.callback.RequestCallback
 import leavesc.reactivehttp.core.callback.RequestMultiplyCallback
@@ -26,25 +23,21 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
         return RetrofitManagement.getService(serviceApiClass, host)
     }
 
-    override val lifecycleCoroutineScope: CoroutineScope = iActionEvent?.lifecycleCoroutineScope
+    override val lifecycleScope: CoroutineScope = iActionEvent?.lifecycleScope
             ?: GlobalScope
 
-    protected fun <T> execute(block: suspend () -> IHttpResBean<T>, callback: RequestCallback<T>?, quietly: Boolean = false): Job {
-        val temp = true
-        return launchIO {
+    protected fun <T> execute(callback: RequestCallback<T>?, showLoading: Boolean = false, block: suspend () -> IHttpResBean<T>): Job {
+        return lifecycleScope.launch(mainDispatcher) {
+            val showLoadingTemp = showLoading
             try {
-                if (!temp) {
-                    launchUI {
-                        showLoading()
-                    }
+                if (showLoadingTemp) {
+                    showLoading()
                 }
                 callback?.onStart()
                 val response = block()
                 callback?.let {
                     if (response.httpIsSuccess) {
-                        launchUI {
-                            callback.onSuccess(response.httpData)
-                        }
+                        callback.onSuccess(response.httpData)
                     } else {
                         throw ServerBadException(response.httpMsg, response.httpCode)
                     }
@@ -52,12 +45,10 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
             } catch (throwable: Throwable) {
                 handleException(generateBaseException(throwable), callback)
             } finally {
-                if (!temp) {
-                    launchUI {
-                        dismissLoading()
-                    }
-                }
                 callback?.onFinally()
+                if (showLoadingTemp) {
+                    dismissLoading()
+                }
             }
         }
     }
@@ -96,9 +87,9 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
         }
     }
 
-    private fun <T> handleException(exception: BaseException, callback: RequestCallback<T>?) {
+    private suspend fun <T> handleException(exception: BaseException, callback: RequestCallback<T>?) {
         callback?.let {
-            launchUI {
+            withMain {
                 when (callback) {
                     is RequestMultiplyToastCallback -> {
                         showToast(exception.formatError)

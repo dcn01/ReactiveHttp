@@ -14,15 +14,21 @@ import leavesc.reactivehttp.weather.core.model.ForecastsBean
 class MapDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
 
     fun getProvince(callback: RequestCallback<List<DistrictBean>>) {
-        execute({ getService().getProvince() }, callback)
+        execute(callback) {
+            getService().getProvince()
+        }
     }
 
     fun getCity(keywords: String, callback: RequestCallback<List<DistrictBean>>) {
-        execute({ getService().getCity(keywords) }, callback)
+        execute(callback) {
+            getService().getCity(keywords)
+        }
     }
 
     fun getCounty(keywords: String, callback: RequestCallback<List<DistrictBean>>) {
-        execute({ getService().getCounty(keywords) }, callback)
+        execute(callback) {
+            getService().getCounty(keywords)
+        }
     }
 
 }
@@ -30,7 +36,9 @@ class MapDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<Api
 class WeatherDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
 
     fun getWeather(city: String, callback: RequestCallback<List<ForecastsBean>>) {
-        execute({ getService().getWeather(city) }, callback)
+        execute(callback) {
+            getService().getWeather(city)
+        }
     }
 
 }

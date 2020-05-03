@@ -12,7 +12,7 @@ import kotlinx.coroutines.GlobalScope
  */
 open class BaseViewModel : ViewModel(), IUIActionEvent {
 
-    override val lifecycleCoroutineScope: CoroutineScope = GlobalScope
+    override val lifecycleScope: CoroutineScope = GlobalScope
 
     val vmActionEvent = MutableLiveData<BaseActionEvent>()
 

@@ -2,7 +2,7 @@ package leavesc.reactivehttp.weather.core.http
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import leavesc.reactivehttp.core.BaseRemoteDataSource
+import leavesc.reactivehttp.core.datasource.RemoteDataSource
 import leavesc.reactivehttp.core.callback.RequestCallback
 import leavesc.reactivehttp.core.viewmodel.IUIActionEvent
 import leavesc.reactivehttp.weather.core.http.base.HttpResBean
@@ -15,7 +15,7 @@ import kotlin.random.Random
  * 时间：2019/5/31 14:27
  * 描述：
  */
-class MapDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
+class MapDataSource(actionEventEvent: IUIActionEvent) : RemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
 
     fun getProvince(callback: RequestCallback<List<DistrictBean>>) {
         execute(callback) {
@@ -37,7 +37,7 @@ class MapDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<Api
 
 }
 
-class WeatherDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
+class WeatherDataSource(actionEventEvent: IUIActionEvent) : RemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
 
     fun getWeather(city: String, callback: RequestCallback<List<ForecastsBean>>) {
         execute(callback) {
@@ -47,7 +47,7 @@ class WeatherDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource
 
 }
 
-class TestDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
+class TestDataSource(actionEventEvent: IUIActionEvent) : RemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
 
     private suspend fun testDelay(): HttpResBean<String> {
         withIO {
@@ -57,7 +57,7 @@ class TestDataSource(actionEventEvent: IUIActionEvent) : BaseRemoteDataSource<Ap
     }
 
     fun testDelay(callback: RequestCallback<String>): Job {
-        return execute(callback, showLoading = false) {
+        return execute(callback) {
             testDelay()
         }
     }

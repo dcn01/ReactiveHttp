@@ -4,7 +4,7 @@ import android.util.Log
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import leavesc.reactivehttp.core.callback.RequestMultiplyCallback
+import leavesc.reactivehttp.core.callback.RequestCallback
 import leavesc.reactivehttp.core.exception.BaseException
 import leavesc.reactivehttp.core.viewmodel.BaseViewModel
 import leavesc.reactivehttp.weather.core.http.TestDataSource
@@ -28,7 +28,7 @@ class TestViewModel : BaseViewModel() {
 
     fun testDelay() {
         job?.cancel(CancellationException("xxxasafafasfa"))
-        job = testDataSource.testDelay(object : RequestMultiplyCallback<String> {
+        job = testDataSource.testDelay(object : RequestCallback<String> {
 
             override fun onStart() {
                 super.onStart()
@@ -43,7 +43,7 @@ class TestViewModel : BaseViewModel() {
             override suspend fun onSuccessIO(data: String) {
                 super.onSuccessIO(data)
                 log("onSuccessIO: " + data)
-                repeat(100){
+                repeat(100) {
                     log("onSuccessIO: " + it)
                     delay(100)
                 }

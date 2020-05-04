@@ -2,8 +2,8 @@ package leavesc.reactivehttp.core.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.GlobalScope
 
 /**
  * 作者：leavesC
@@ -12,7 +12,8 @@ import kotlinx.coroutines.GlobalScope
  */
 open class BaseViewModel : ViewModel(), IUIActionEvent {
 
-    override val lifecycleScope: CoroutineScope = GlobalScope
+    override val lifecycleSupportedScope: CoroutineScope
+        get() = viewModelScope
 
     val vmActionEvent = MutableLiveData<BaseActionEvent>()
 

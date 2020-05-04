@@ -1,6 +1,5 @@
 package leavesc.reactivehttp.core.datasource
 
-import android.util.Log
 import kotlinx.coroutines.*
 import leavesc.reactivehttp.core.bean.IHttpResBean
 import leavesc.reactivehttp.core.callback.BaseRequestCallback
@@ -26,7 +25,7 @@ open class RemoteExtendDataSource<T : Any>(iActionEvent: IUIActionEvent?, servic
     @Throws(BaseException::class)
     private fun executeReal(callback: BaseRequestCallback?, showLoading: Boolean,
                             vararg blockList: suspend () -> IHttpResBean<*>): Deferred<List<IHttpResBean<*>>> {
-        return lifecycleScope.async(mainDispatcher) {
+        return lifecycleSupportedScope.async(mainDispatcher) {
             if (showLoading) {
                 showLoading()
             }
@@ -50,7 +49,7 @@ open class RemoteExtendDataSource<T : Any>(iActionEvent: IUIActionEvent?, servic
                                        block1: suspend () -> IHttpResBean<T1>,
                                        block2: suspend () -> IHttpResBean<T2>,
                                        block3: suspend () -> IHttpResBean<T3>): Job {
-        return lifecycleScope.launch(mainDispatcher) {
+        return lifecycleSupportedScope.launch(mainDispatcher) {
             try {
                 val result = executeReal(callback, showLoading, block1, block2, block3)
                 val await = result.await()
@@ -75,7 +74,7 @@ open class RemoteExtendDataSource<T : Any>(iActionEvent: IUIActionEvent?, servic
     protected fun <T1, T2> execute(callback: RequestPairCallback<T1, T2>?, showLoading: Boolean,
                                    block1: suspend () -> IHttpResBean<T1>,
                                    block2: suspend () -> IHttpResBean<T2>): Job {
-        return lifecycleScope.launch(mainDispatcher) {
+        return lifecycleSupportedScope.launch(mainDispatcher) {
             try {
                 val result = executeReal(callback, showLoading, block1, block2)
                 val await = result.await()

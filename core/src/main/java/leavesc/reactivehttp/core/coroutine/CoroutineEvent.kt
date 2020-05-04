@@ -2,7 +2,6 @@ package leavesc.reactivehttp.core.coroutine
 
 import android.os.Handler
 import android.os.Looper
-import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlin.coroutines.CoroutineContext
@@ -27,7 +26,7 @@ interface ICoroutineEvent {
     //  因为一个 BaseViewModel 可能和多个 BaseView 相关联，所以不要把 BaseView 的 CoroutineScope 传给 BaseViewModel
     //3.BaseRemoteDataSource 首选使用 BaseViewModel 传过来的 lifecycleCoroutineScope，
     //  因为 BaseRemoteDataSource 和 BaseViewModel 是一对一的关系
-    val lifecycleScope: CoroutineScope
+    val lifecycleSupportedScope: CoroutineScope
 
     //此字段用于声明在全局范围下的协程作用域，不和生命周期绑定
     val globalScope: CoroutineScope
@@ -76,32 +75,32 @@ interface ICoroutineEvent {
 
     //用于在 UI 线程完成操作
     fun launchUI(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(lifecycleScope, mainDispatcher, block)
+        return defaultLaunch(lifecycleSupportedScope, mainDispatcher, block)
     }
 
     //用于完成 CPU 密集型的操作
     fun launchCPU(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(lifecycleScope, Dispatchers.Default, block)
+        return defaultLaunch(lifecycleSupportedScope, Dispatchers.Default, block)
     }
 
     //用于在 IO 密集型的操作
     fun launchIO(block: suspend CoroutineScope.() -> Unit): Job {
-        return defaultLaunch(lifecycleScope, Dispatchers.IO, block)
+        return defaultLaunch(lifecycleSupportedScope, Dispatchers.IO, block)
     }
 
     //用于在 UI 线程完成操作
     fun <T> asyncUI(block: suspend CoroutineScope.() -> T): Deferred<T> {
-        return defaultAsync(lifecycleScope, mainDispatcher, block)
+        return defaultAsync(lifecycleSupportedScope, mainDispatcher, block)
     }
 
     //用于完成 CPU 密集型的操作
     fun <T> asyncCPU(block: suspend CoroutineScope.() -> T): Deferred<T> {
-        return defaultAsync(lifecycleScope, Dispatchers.Default, block)
+        return defaultAsync(lifecycleSupportedScope, Dispatchers.Default, block)
     }
 
     //用于在 IO 密集型的操作
     fun <T> asyncIO(block: suspend CoroutineScope.() -> T): Deferred<T> {
-        return defaultAsync(lifecycleScope, Dispatchers.IO, block)
+        return defaultAsync(lifecycleSupportedScope, Dispatchers.IO, block)
     }
 
     //用于在 UI 线程完成操作

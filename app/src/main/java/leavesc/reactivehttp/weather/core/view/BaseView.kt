@@ -5,6 +5,7 @@ import android.app.ProgressDialog
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.MainScope
 import leavesc.reactivehttp.core.viewmodel.IUIActionEventObserver
@@ -17,7 +18,8 @@ import leavesc.reactivehttp.core.viewmodel.IUIActionEventObserver
 @SuppressLint("Registered")
 abstract class BaseActivity : AppCompatActivity(), IUIActionEventObserver {
 
-    override val lifecycleScope: CoroutineScope = MainScope()
+    override val lifecycleSupportedScope: CoroutineScope
+        get() = lifecycleScope
 
     override val lContext: Context?
         get() = this

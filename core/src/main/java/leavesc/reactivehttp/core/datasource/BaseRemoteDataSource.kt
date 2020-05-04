@@ -24,7 +24,7 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
         return RetrofitManagement.getService(serviceApiClass, host)
     }
 
-    override val lifecycleScope: CoroutineScope = iActionEvent?.lifecycleScope
+    override val lifecycleSupportedScope: CoroutineScope = iActionEvent?.lifecycleSupportedScope
             ?: GlobalScope
 
     /**

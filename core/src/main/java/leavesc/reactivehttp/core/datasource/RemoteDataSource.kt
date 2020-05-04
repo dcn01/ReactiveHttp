@@ -1,6 +1,5 @@
 package leavesc.reactivehttp.core.datasource
 
-import android.util.Log
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -44,7 +43,6 @@ open class RemoteDataSource<T : Any>(iActionEvent: IUIActionEvent?, serviceApiCl
                     }
                 }
             } catch (throwable: Throwable) {
-                Log.e("TAG", "message: " + throwable.message)
                 handleException(generateBaseException(throwable), callback)
             } finally {
                 try {

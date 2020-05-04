@@ -2,8 +2,10 @@ package leavesc.reactivehttp.weather.core.http
 
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import leavesc.reactivehttp.core.datasource.RemoteDataSource
 import leavesc.reactivehttp.core.callback.RequestCallback
+import leavesc.reactivehttp.core.callback.RequestPairCallback
+import leavesc.reactivehttp.core.datasource.RemoteDataSource
+import leavesc.reactivehttp.core.datasource.RemoteExtendDataSource
 import leavesc.reactivehttp.core.viewmodel.IUIActionEvent
 import leavesc.reactivehttp.weather.core.http.base.HttpResBean
 import leavesc.reactivehttp.weather.core.model.DistrictBean
@@ -47,7 +49,7 @@ class WeatherDataSource(actionEventEvent: IUIActionEvent) : RemoteDataSource<Api
 
 }
 
-class TestDataSource(actionEventEvent: IUIActionEvent) : RemoteDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
+class TestDataSource(actionEventEvent: IUIActionEvent) : RemoteExtendDataSource<ApiService>(actionEventEvent, ApiService::class.java) {
 
     private suspend fun testDelay(): HttpResBean<String> {
         withIO {
@@ -61,5 +63,10 @@ class TestDataSource(actionEventEvent: IUIActionEvent) : RemoteDataSource<ApiSer
             testDelay()
         }
     }
+
+    fun testPair(callback: RequestPairCallback<List<ForecastsBean>, String>) {
+        execute(callback, showLoading = false, block1 = { getService().getWeather("411122") }, block2 = { testDelay() })
+    }
+
 
 }

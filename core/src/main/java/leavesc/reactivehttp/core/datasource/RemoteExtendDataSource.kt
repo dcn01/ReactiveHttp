@@ -1,11 +1,12 @@
 package leavesc.reactivehttp.core.datasource
 
 import android.util.Log
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import leavesc.reactivehttp.core.bean.IHttpResBean
+import leavesc.reactivehttp.core.callback.BaseRequestCallback
+import leavesc.reactivehttp.core.callback.RequestPairCallback
 import leavesc.reactivehttp.core.callback.RequestTripleCallback
+import leavesc.reactivehttp.core.exception.BaseException
 import leavesc.reactivehttp.core.exception.ServerBadException
 import leavesc.reactivehttp.core.viewmodel.IUIActionEvent
 
@@ -16,7 +17,34 @@ import leavesc.reactivehttp.core.viewmodel.IUIActionEvent
  * GitHub：https://github.com/leavesC
  * Blog：https://juejin.im/user/57c2ea9befa631005abd00c6
  */
+/**
+ * 提供了 两个/三个 接口同时并行请求的方法，当所有接口都请求成功时，会通过 onSuccess 方法传出请求结果
+ * 当包含的某个接口请求失败时，则会直接回调 onFail 方法
+ */
 open class RemoteExtendDataSource<T : Any>(iActionEvent: IUIActionEvent?, serviceApiClass: Class<T>) : RemoteDataSource<T>(iActionEvent, serviceApiClass) {
+
+    @Throws(BaseException::class)
+    private fun executeReal(callback: BaseRequestCallback?, showLoading: Boolean,
+                            vararg blockList: suspend () -> IHttpResBean<*>): Deferred<List<IHttpResBean<*>>> {
+        return lifecycleScope.async(mainDispatcher) {
+            if (showLoading) {
+                showLoading()
+            }
+            callback?.onStart()
+            val asyncList = mutableListOf<Deferred<IHttpResBean<*>>>()
+            blockList.forEach {
+                asyncList.add(async {
+                    it()
+                })
+            }
+            val responseList = asyncList.awaitAll()
+            val failed = responseList.find { it.httpIsFailed }
+            if (failed != null) {
+                throw ServerBadException(failed.httpMsg, failed.httpCode)
+            }
+            return@async responseList
+        }
+    }
 
     protected fun <T1, T2, T3> execute(callback: RequestTripleCallback<T1, T2, T3>?, showLoading: Boolean,
                                        block1: suspend () -> IHttpResBean<T1>,
@@ -24,39 +52,38 @@ open class RemoteExtendDataSource<T : Any>(iActionEvent: IUIActionEvent?, servic
                                        block3: suspend () -> IHttpResBean<T3>): Job {
         return lifecycleScope.launch(mainDispatcher) {
             try {
-                if (showLoading) {
-                    showLoading()
-                }
-                callback?.onStart()
-                val async1 = async {
-                    block1()
-                }
-                val async2 = async {
-                    block2()
-                }
-                val async3 = async {
-                    block3()
-                }
-                val response1 = async1.await()
-                val response2 = async2.await()
-                val response3 = async3.await()
-                callback?.let {
-                    if (response1.httpIsFailed) {
-                        throw ServerBadException(response1.httpMsg, response1.httpCode)
-                    }
-                    if (response2.httpIsFailed) {
-                        throw ServerBadException(response2.httpMsg, response2.httpCode)
-                    }
-                    if (response3.httpIsFailed) {
-                        throw ServerBadException(response3.httpMsg, response3.httpCode)
-                    }
-                    callback.onSuccess(response1.httpData, response2.httpData, response3.httpData)
-                    withIO {
-                        callback.onSuccessIO(response1.httpData, response2.httpData, response3.httpData)
-                    }
+                val result = executeReal(callback, showLoading, block1, block2, block3)
+                val await = result.await()
+                callback?.onSuccess(await[0].httpData as T1, await[1].httpData as T2, await[2].httpData as T3)
+                withIO {
+                    callback?.onSuccessIO(await[0].httpData as T1, await[1].httpData as T2, await[2].httpData as T3)
                 }
             } catch (throwable: Throwable) {
-                Log.e("TAG", "message: " + throwable.message)
+                handleException(generateBaseException(throwable), callback)
+            } finally {
+                try {
+                    callback?.onFinally()
+                } finally {
+                    if (showLoading) {
+                        dismissLoading()
+                    }
+                }
+            }
+        }
+    }
+
+    protected fun <T1, T2> execute(callback: RequestPairCallback<T1, T2>?, showLoading: Boolean,
+                                   block1: suspend () -> IHttpResBean<T1>,
+                                   block2: suspend () -> IHttpResBean<T2>): Job {
+        return lifecycleScope.launch(mainDispatcher) {
+            try {
+                val result = executeReal(callback, showLoading, block1, block2)
+                val await = result.await()
+                callback?.onSuccess(await[0].httpData as T1, await[1].httpData as T2)
+                withIO {
+                    callback?.onSuccessIO(await[0].httpData as T1, await[1].httpData as T2)
+                }
+            } catch (throwable: Throwable) {
                 handleException(generateBaseException(throwable), callback)
             } finally {
                 try {

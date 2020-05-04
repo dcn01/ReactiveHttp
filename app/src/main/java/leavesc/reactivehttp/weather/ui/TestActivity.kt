@@ -25,6 +25,9 @@ class TestActivity : BaseActivity() {
         btn_test.setOnClickListener {
             testViewModel.testDelay()
         }
+        btn_test2.setOnClickListener {
+            testViewModel.testPair()
+        }
     }
 
 }

@@ -5,9 +5,12 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import leavesc.reactivehttp.core.callback.RequestCallback
+import leavesc.reactivehttp.core.callback.RequestPairCallback
 import leavesc.reactivehttp.core.exception.BaseException
 import leavesc.reactivehttp.core.viewmodel.BaseViewModel
 import leavesc.reactivehttp.weather.core.http.TestDataSource
+import leavesc.reactivehttp.weather.core.model.ForecastsBean
+import kotlin.system.measureTimeMillis
 
 /**
  * 作者：leavesC
@@ -59,6 +62,16 @@ class TestViewModel : BaseViewModel() {
                 log("onFinally: " + Thread.currentThread().name)
             }
 
+        })
+    }
+
+    fun testPair() {
+        testDataSource.testPair(object : RequestPairCallback<List<ForecastsBean>, String> {
+            override fun onSuccess(data1: List<ForecastsBean>, data2: String) {
+                log("onSuccess")
+                log("data1: " + data1)
+                log("data2: " + data2)
+            }
         })
     }
 

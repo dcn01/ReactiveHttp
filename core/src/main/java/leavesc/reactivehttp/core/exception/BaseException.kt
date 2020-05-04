@@ -9,7 +9,7 @@ import leavesc.reactivehttp.core.config.HttpConfig
  */
 /**
  * @param errorMessage      服务器返回的异常信息 或者是 请求过程中抛出的信息，是最原始的异常信息
- * @param errorCode              服务器返回的错误码 或者是 HttpConfig 中定义的本地错误码
+ * @param errorCode         服务器返回的错误码 或者是 HttpConfig 中定义的本地错误码
  * @param localException    用于当 code 是本地错误码时，存储真实的运行时异常
  */
 open class BaseException(val errorMessage: String, val errorCode: Int, val localException: Throwable?) : Exception(errorMessage) {

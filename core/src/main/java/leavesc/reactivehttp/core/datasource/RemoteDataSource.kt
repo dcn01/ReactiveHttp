@@ -43,7 +43,7 @@ open class RemoteDataSource<T : Any>(iActionEvent: IUIActionEvent?, serviceApiCl
                     }
                 }
             } catch (throwable: Throwable) {
-                handleException(generateBaseException(throwable), callback)
+                handleException(generateBaseExceptionReal(throwable), callback)
             } finally {
                 try {
                     callback?.onFinally()
@@ -60,17 +60,17 @@ open class RemoteDataSource<T : Any>(iActionEvent: IUIActionEvent?, serviceApiCl
     @Throws(BaseException::class)
     protected fun <T> request(block: suspend () -> IHttpResBean<T>): T {
         return runBlocking {
-            val asyncIO = asyncIO {
-                block()
-            }
             try {
+                val asyncIO = asyncIO {
+                    block()
+                }
                 val response = asyncIO.await()
                 if (response.httpIsSuccess) {
                     return@runBlocking response.httpData
                 }
                 throw ServerBadException(response.httpMsg, response.httpCode)
             } catch (throwable: Throwable) {
-                throw generateBaseException(throwable)
+                throw generateBaseExceptionReal(throwable)
             }
         }
     }

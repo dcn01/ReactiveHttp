@@ -58,7 +58,7 @@ open class RemoteExtendDataSource<T : Any>(iActionEvent: IUIActionEvent?, servic
                     callback?.onSuccessIO(await[0].httpData as T1, await[1].httpData as T2, await[2].httpData as T3)
                 }
             } catch (throwable: Throwable) {
-                handleException(generateBaseException(throwable), callback)
+                handleException(generateBaseExceptionReal(throwable), callback)
             } finally {
                 try {
                     callback?.onFinally()
@@ -83,7 +83,7 @@ open class RemoteExtendDataSource<T : Any>(iActionEvent: IUIActionEvent?, servic
                     callback?.onSuccessIO(await[0].httpData as T1, await[1].httpData as T2)
                 }
             } catch (throwable: Throwable) {
-                handleException(generateBaseException(throwable), callback)
+                handleException(generateBaseExceptionReal(throwable), callback)
             } finally {
                 try {
                     callback?.onFinally()

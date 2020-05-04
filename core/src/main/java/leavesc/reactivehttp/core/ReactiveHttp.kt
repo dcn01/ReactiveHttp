@@ -21,6 +21,8 @@ class ReactiveHttp private constructor(builder: Builder) {
 
     private val formatExceptionFun = builder.formatExceptionFun ?: ::formatException
 
+    private val exceptionRecordFun = builder.exceptionRecordFun
+
     private val serverUrl = builder.serverUrl
 
     private val okHttpClient = builder.okHttClient ?: createDefaultOkHttpClient()
@@ -28,6 +30,7 @@ class ReactiveHttp private constructor(builder: Builder) {
     fun init() {
         HttpConfig.context = context
         HttpConfig.formatExceptionFun = formatExceptionFun
+        HttpConfig.exceptionRecordFun = exceptionRecordFun
         RetrofitManagement.serverUrl = serverUrl
         RetrofitManagement.okHttpClient = okHttpClient
     }
@@ -42,18 +45,15 @@ class ReactiveHttp private constructor(builder: Builder) {
 
     private fun formatException(baseException: BaseException): String {
         return when (baseException.localException) {
-            is ConnectException, is SocketTimeoutException, is InterruptedIOException -> {
-                "连接超时！请检查您的网络设置"
-            }
-            is UnknownHostException -> {
-                "数据获取失败，请检查您的网络"
-            }
             null -> {
-                //服务器异常
+                //接口返回的 httpCode 并非 successCode，直接返回服务器返回的 errorMessage
                 baseException.errorMessage
             }
+            is ConnectException, is SocketTimeoutException, is InterruptedIOException, is UnknownHostException -> {
+                "连接超时！请检查您的网络设置"
+            }
             else -> {
-                "请求过程抛出异常"
+                "请求过程抛出异常：" + baseException.errorMessage
             }
         }
     }
@@ -62,6 +62,9 @@ class ReactiveHttp private constructor(builder: Builder) {
 
         //用于对 BaseException 进行格式化，以便在请求失败时 Toast 提示错误信息
         internal var formatExceptionFun: ((baseException: BaseException) -> String)? = null
+
+        //用于将网络请求过程中的异常反馈给外部，以便记录
+        internal var exceptionRecordFun: ((throwable: Throwable) -> Unit)? = null
 
         internal var okHttClient: OkHttpClient? = null
 
@@ -76,6 +79,11 @@ class ReactiveHttp private constructor(builder: Builder) {
 
         fun formatException(function: (baseException: BaseException) -> String): Builder {
             formatExceptionFun = function
+            return this
+        }
+
+        fun exceptionRecordFun(function: (throwable: Throwable) -> Unit): Builder {
+            exceptionRecordFun = function
             return this
         }
 

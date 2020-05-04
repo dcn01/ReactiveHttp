@@ -42,6 +42,12 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
         }
     }
 
+    protected fun generateBaseExceptionReal(throwable: Throwable): BaseException {
+        return generateBaseException(throwable).apply {
+            exceptionRecord(this)
+        }
+    }
+
     protected suspend fun handleException(exception: BaseException, callback: BaseRequestCallback?) {
         callback?.let {
             withMain {
@@ -68,6 +74,10 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
 
     protected fun showToast(msg: String) {
         iActionEvent?.showToast(msg)
+    }
+
+    private fun exceptionRecord(throwable: Throwable) {
+        HttpConfig.exceptionRecordFun?.invoke(throwable)
     }
 
 }

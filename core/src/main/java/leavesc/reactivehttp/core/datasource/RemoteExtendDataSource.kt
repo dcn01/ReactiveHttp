@@ -30,18 +30,9 @@ open class RemoteExtendDataSource<T : Any>(iActionEvent: IUIActionEvent?, servic
                 showLoading()
             }
             callback?.onStart()
-            val asyncList = mutableListOf<Deferred<IHttpResBean<*>>>()
-            blockList.forEach {
-                asyncList.add(async {
-                    it()
-                })
-            }
-            val responseList = asyncList.awaitAll()
-            val failed = responseList.find { it.httpIsFailed }
-            if (failed != null) {
-                throw ServerBadException(failed.httpMsg, failed.httpCode)
-            }
-            return@async responseList
+            val responseList = blockList.map { async { it() } }.awaitAll()
+            val failed = responseList.find { it.httpIsFailed } ?: return@async responseList
+            throw ServerBadException(failed.httpMsg, failed.httpCode)
         }
     }
 

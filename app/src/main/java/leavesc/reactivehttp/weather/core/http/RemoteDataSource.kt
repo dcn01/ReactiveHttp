@@ -53,7 +53,7 @@ class TestDataSource(actionEventEvent: IUIActionEvent) : RemoteExtendDataSource<
 
     private suspend fun testDelay(): HttpResBean<String> {
         withIO {
-            delay(10000)
+            delay(4000)
         }
         return HttpResBean(Random.nextInt(0, 2), "msg", "data coming")
     }

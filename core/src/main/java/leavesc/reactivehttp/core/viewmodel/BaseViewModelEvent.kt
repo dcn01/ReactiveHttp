@@ -60,26 +60,34 @@ interface IUIActionEventObserver : IUIActionEvent {
                 ViewModelProvider(localValue).get(clazz)
             }
             else -> {
-                clazz.newInstance();
+                clazz.newInstance()
             }
         }.apply {
-            vmActionEvent.observe(lLifecycleOwner, Observer {
-                when (it) {
-                    is ShowLoadingEvent -> {
-                        this@IUIActionEventObserver.showLoading(it.message)
-                    }
-                    DismissLoadingEvent -> {
-                        this@IUIActionEventObserver.dismissLoading()
-                    }
-                    FinishViewEvent -> {
-                        this@IUIActionEventObserver.finishView()
-                    }
-                    is ShowToastEvent -> {
-                        this@IUIActionEventObserver.showToast(it.message)
-                    }
-                }
-            })
+            observerActionEvent()
             initializer?.invoke(this, lLifecycleOwner)
+        }
+    }
+
+    fun BaseViewModel.observerActionEvent() {
+        vmActionEvent.observe(lLifecycleOwner, Observer {
+            generateActionEvent(it)
+        })
+    }
+
+    fun generateActionEvent(baseActionEvent: BaseActionEvent) {
+        when (baseActionEvent) {
+            is ShowLoadingEvent -> {
+                this@IUIActionEventObserver.showLoading(baseActionEvent.message)
+            }
+            DismissLoadingEvent -> {
+                this@IUIActionEventObserver.dismissLoading()
+            }
+            FinishViewEvent -> {
+                this@IUIActionEventObserver.finishView()
+            }
+            is ShowToastEvent -> {
+                this@IUIActionEventObserver.showToast(baseActionEvent.message)
+            }
         }
     }
 

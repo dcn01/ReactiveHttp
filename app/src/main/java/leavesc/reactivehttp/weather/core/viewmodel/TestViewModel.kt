@@ -10,7 +10,6 @@ import leavesc.reactivehttp.core.exception.BaseException
 import leavesc.reactivehttp.core.viewmodel.BaseViewModel
 import leavesc.reactivehttp.weather.core.http.TestDataSource
 import leavesc.reactivehttp.weather.core.model.ForecastsBean
-import kotlin.system.measureTimeMillis
 
 /**
  * 作者：leavesC
@@ -71,6 +70,9 @@ class TestViewModel : BaseViewModel() {
                 log("onSuccess")
                 log("data1: " + data1)
                 log("data2: " + data2)
+
+                showToast("data:1 $data1\ndata2: $data2")
+
             }
         })
     }

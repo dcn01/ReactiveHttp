@@ -21,7 +21,11 @@ import leavesc.reactivehttp.weather.core.model.ForecastsBean
 class TestViewModel : BaseViewModel() {
 
     private fun log(msg: String) {
-        Log.e("TestViewModel", msg)
+        Log.e("TestViewModel", "[${Thread.currentThread().name}: ]+${msg}")
+    }
+
+    private fun showToastWithThread(msg: String) {
+        showToast("[${Thread.currentThread().name}: ]${msg}")
     }
 
     private val testDataSource = TestDataSource(this)
@@ -29,36 +33,46 @@ class TestViewModel : BaseViewModel() {
     private var job: Job? = null
 
     fun testDelay() {
-        job?.cancel(CancellationException("xxxasafafasfa"))
+        job?.cancel(CancellationException("主动取消Job"))
         job = testDataSource.testDelay(object : RequestCallback<String> {
 
             override fun onStart() {
                 super.onStart()
 //                showLoading()
-                log("onStart: " + Thread.currentThread().name)
+                log("onStart")
+
+                showToastWithThread("onStart")
             }
 
             override fun onSuccess(data: String) {
                 log("onSuccess: " + data)
+
+                showToastWithThread("onSuccess: " + data)
             }
 
             override suspend fun onSuccessIO(data: String) {
                 super.onSuccessIO(data)
                 log("onSuccessIO: " + data)
-                repeat(100) {
+                repeat(3) {
                     log("onSuccessIO: " + it)
-                    delay(100)
+                    delay(200)
+
+                    showToastWithThread("onSuccessIO: " + it)
                 }
             }
 
             override fun onFail(exception: BaseException) {
                 log("onFail: " + exception.errorMessage)
+
+                showToastWithThread("onFail: " + exception.errorMessage)
             }
 
             override fun onFinally() {
                 super.onFinally()
 //                dismissLoading()
-                log("onFinally: " + Thread.currentThread().name)
+                log("onFinally")
+
+                showToastWithThread("onFinally")
             }
 
         })
@@ -71,7 +85,7 @@ class TestViewModel : BaseViewModel() {
                 log("data1: " + data1)
                 log("data2: " + data2)
 
-                showToast("data:1 $data1\ndata2: $data2")
+                showToastWithThread("data:1 $data1\ndata2: $data2")
 
             }
         })

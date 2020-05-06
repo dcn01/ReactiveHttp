@@ -9,6 +9,7 @@ import leavesc.reactivehttp.core.config.HttpConfig
 import leavesc.reactivehttp.core.coroutine.ICoroutineEvent
 import leavesc.reactivehttp.core.exception.BaseException
 import leavesc.reactivehttp.core.exception.LocalBadException
+import leavesc.reactivehttp.core.utils.showToastFun
 import leavesc.reactivehttp.core.viewmodel.IUIActionEvent
 
 /**
@@ -73,7 +74,7 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
     }
 
     protected fun showToast(msg: String) {
-        iActionEvent?.showToast(msg)
+        showToastFun(msg)
     }
 
     private fun exceptionRecord(throwable: Throwable) {

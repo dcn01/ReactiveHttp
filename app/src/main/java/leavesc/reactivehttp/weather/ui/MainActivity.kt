@@ -23,7 +23,6 @@ class MainActivity : BaseActivity() {
             } else {
                 startActivity(WeatherActivity::class.java)
             }
-            finish()
         }
         btn_request.setOnClickListener {
             startActivity(TestActivity::class.java)

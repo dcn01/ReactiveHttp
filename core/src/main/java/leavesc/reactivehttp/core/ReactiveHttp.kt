@@ -25,6 +25,8 @@ class ReactiveHttp private constructor(builder: Builder) {
 
     private val serverUrl = builder.serverUrl
 
+    private val mockUrl = builder.mockUrl
+
     private val okHttpClient = builder.okHttClient ?: createDefaultOkHttpClient()
 
     fun init() {
@@ -32,6 +34,7 @@ class ReactiveHttp private constructor(builder: Builder) {
         HttpConfig.formatExceptionFun = formatExceptionFun
         HttpConfig.exceptionRecordFun = exceptionRecordFun
         RetrofitManagement.serverUrl = serverUrl
+        RetrofitManagement.mockUrl = mockUrl
         RetrofitManagement.okHttpClient = okHttpClient
     }
 
@@ -68,6 +71,8 @@ class ReactiveHttp private constructor(builder: Builder) {
 
         internal var okHttClient: OkHttpClient? = null
 
+        internal var mockUrl: String = ""
+
         fun build(): ReactiveHttp {
             return ReactiveHttp(this)
         }
@@ -84,6 +89,11 @@ class ReactiveHttp private constructor(builder: Builder) {
 
         fun exceptionRecordFun(function: (throwable: Throwable) -> Unit): Builder {
             exceptionRecordFun = function
+            return this
+        }
+
+        fun mockUrl(tepMockUrl: String): Builder {
+            mockUrl = tepMockUrl
             return this
         }
 

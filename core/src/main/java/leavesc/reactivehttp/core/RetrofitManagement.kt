@@ -14,6 +14,8 @@ internal object RetrofitManagement {
 
     lateinit var serverUrl: String
 
+    lateinit var mockUrl: String
+
     lateinit var okHttpClient: OkHttpClient
 
     private val serviceMap = ConcurrentHashMap<String, Any>()

@@ -14,6 +14,16 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles 'consumer-rules.pro'
     }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -29,7 +39,6 @@ dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     compileOnly 'androidx.core:core-ktx:1.2.0'
     compileOnly 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-//    compileOnly 'androidx.lifecycle:lifecycle-runtime:2.2.0'
     compileOnly 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
 
     compileOnly 'com.squareup.retrofit2:retrofit:2.7.2'

@@ -26,7 +26,8 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
     protected open val isMockState: Boolean
         get() = false
 
-    protected val mockUrl: String
+    //允许子类复写此字段用于使用特殊的 mockUrl
+    protected open val mockUrl: String
         get() = RetrofitManagement.mockUrl
 
     protected val releaseUrl: String

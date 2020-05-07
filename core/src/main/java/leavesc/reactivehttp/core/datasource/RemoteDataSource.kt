@@ -24,7 +24,7 @@ open class RemoteDataSource<T : Any>(iActionEvent: IUIActionEvent?, serviceApiCl
         return execute(callback, showLoading = true, block = block)
     }
 
-    private fun <T> execute(callback: RequestCallback<T>?, showLoading: Boolean, block: suspend () -> IHttpResBean<T>): Job {
+    protected fun <T> execute(callback: RequestCallback<T>?, showLoading: Boolean, block: suspend () -> IHttpResBean<T>): Job {
         return lifecycleSupportedScope.launch(mainDispatcher) {
             try {
                 if (showLoading) {

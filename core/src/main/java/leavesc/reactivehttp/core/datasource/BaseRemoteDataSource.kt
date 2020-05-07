@@ -2,7 +2,6 @@ package leavesc.reactivehttp.core.datasource
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
-import leavesc.reactivehttp.core.BuildConfig
 import leavesc.reactivehttp.core.RetrofitManagement
 import leavesc.reactivehttp.core.callback.BaseRequestCallback
 import leavesc.reactivehttp.core.callback.QuietCallback
@@ -41,13 +40,13 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
     //就是说，如果在 子DataSource 里所有接口都是需要使用 mock 的话，则在 子DataSource 继承 isMockState 将之改为 true
     //如果只是少量接口需要 mock 的话，则使用 getService(mockUrl) 来调用 mock 接口
     private fun generateApiHost(host: String): String {
-        if (!BuildConfig.DEBUG) {
+        if (HttpConfig.isReleaseFun()) {
             return releaseUrl
         }
         if (host.isNotBlank()) {
             return host
         }
-        if (isMockState) {
+        if (isMockState && mockUrl.isNotBlank()) {
             return mockUrl
         }
         return releaseUrl

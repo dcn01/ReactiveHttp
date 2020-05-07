@@ -23,6 +23,10 @@ class ReactiveHttp private constructor(builder: Builder) {
 
     private val exceptionRecordFun = builder.exceptionRecordFun
 
+    private val isReleaseFun = builder.isReleaseFun ?: {
+        true
+    }
+
     private val serverUrl = builder.serverUrl
 
     private val mockUrl = builder.mockUrl
@@ -33,6 +37,7 @@ class ReactiveHttp private constructor(builder: Builder) {
         HttpConfig.context = context
         HttpConfig.formatExceptionFun = formatExceptionFun
         HttpConfig.exceptionRecordFun = exceptionRecordFun
+        HttpConfig.isReleaseFun = isReleaseFun
         RetrofitManagement.serverUrl = serverUrl
         RetrofitManagement.mockUrl = mockUrl
         RetrofitManagement.okHttpClient = okHttpClient
@@ -69,6 +74,9 @@ class ReactiveHttp private constructor(builder: Builder) {
         //用于将网络请求过程中的异常反馈给外部，以便记录
         internal var exceptionRecordFun: ((throwable: Throwable) -> Unit)? = null
 
+        //用于判断当前是否处于正式环境
+        internal var isReleaseFun: (() -> Boolean)? = null
+
         internal var okHttClient: OkHttpClient? = null
 
         internal var mockUrl: String = ""
@@ -89,6 +97,11 @@ class ReactiveHttp private constructor(builder: Builder) {
 
         fun exceptionRecordFun(function: (throwable: Throwable) -> Unit): Builder {
             exceptionRecordFun = function
+            return this
+        }
+
+        fun isReleaseFun(function: () -> Boolean): Builder {
+            isReleaseFun = function
             return this
         }
 

@@ -16,6 +16,8 @@ internal object HttpConfig {
 
     var exceptionRecordFun: ((throwable: Throwable) -> Unit)? = null
 
+    lateinit var isReleaseFun: (() -> Boolean)
+
     //本地定义的 code 以 CODE_LOCAL 开头
 
     //此变量用于表示在网络请求过程过程中抛出了异常

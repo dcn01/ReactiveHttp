@@ -20,7 +20,7 @@ open class BaseException(val errorMessage: String, val errorCode: Int, val local
 
     //格式化好的异常信息
     val formatError: String
-        get() = HttpConfig.formatExceptionFun(this)
+        get() = HttpConfig.exceptionFormatFun(this)
 
 }
 

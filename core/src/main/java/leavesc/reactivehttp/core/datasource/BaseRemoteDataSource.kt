@@ -81,6 +81,9 @@ open class BaseRemoteDataSource<T : Any>(private val iActionEvent: IUIActionEven
     }
 
     protected suspend fun handleException(exception: BaseException, callback: BaseRequestCallback?) {
+        if (HttpConfig.exceptionHandleFun?.invoke(exception) == false) {
+            return
+        }
         callback?.let {
             withMain {
                 when (callback) {

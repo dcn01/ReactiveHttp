@@ -19,9 +19,11 @@ class ReactiveHttp private constructor(builder: Builder) {
 
     private val context = builder.context.applicationContext
 
-    private val formatExceptionFun = builder.formatExceptionFun ?: ::formatException
+    private val exceptionFormatFun = builder.exceptionFormatFun ?: ::formatException
 
     private val exceptionRecordFun = builder.exceptionRecordFun
+
+    private var exceptionhHandleFun = builder.exceptionHandleFun
 
     private val isReleaseFun = builder.isReleaseFun ?: {
         true
@@ -35,8 +37,9 @@ class ReactiveHttp private constructor(builder: Builder) {
 
     fun init() {
         HttpConfig.context = context
-        HttpConfig.formatExceptionFun = formatExceptionFun
+        HttpConfig.exceptionFormatFun = exceptionFormatFun
         HttpConfig.exceptionRecordFun = exceptionRecordFun
+        HttpConfig.exceptionHandleFun = exceptionhHandleFun
         HttpConfig.isReleaseFun = isReleaseFun
         RetrofitManagement.serverUrl = serverUrl
         RetrofitManagement.mockUrl = mockUrl
@@ -69,10 +72,13 @@ class ReactiveHttp private constructor(builder: Builder) {
     class Builder constructor(internal val context: Context, internal val serverUrl: String) {
 
         //用于对 BaseException 进行格式化，以便在请求失败时 Toast 提示错误信息
-        internal var formatExceptionFun: ((baseException: BaseException) -> String)? = null
+        internal var exceptionFormatFun: ((baseException: BaseException) -> String)? = null
 
         //用于将网络请求过程中的异常反馈给外部，以便记录
         internal var exceptionRecordFun: ((throwable: Throwable) -> Unit)? = null
+
+        //用于由外部中转控制当抛出异常时是否走 onFail 回调，当返回 true 时则回调，否则不回调
+        var exceptionHandleFun: ((exception: BaseException) -> Boolean)? = null
 
         //用于判断当前是否处于正式环境
         internal var isReleaseFun: (() -> Boolean)? = null
@@ -90,8 +96,13 @@ class ReactiveHttp private constructor(builder: Builder) {
             return this
         }
 
-        fun formatException(function: (baseException: BaseException) -> String): Builder {
-            formatExceptionFun = function
+        fun exceptionFormatFun(function: (baseException: BaseException) -> String): Builder {
+            exceptionFormatFun = function
+            return this
+        }
+
+        fun exceptionHandleFun(function: (exception: BaseException) -> Boolean): Builder {
+            exceptionHandleFun = function
             return this
         }
 

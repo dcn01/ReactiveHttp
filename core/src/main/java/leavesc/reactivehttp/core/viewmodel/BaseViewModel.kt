@@ -18,19 +18,19 @@ open class BaseViewModel : ViewModel(), IUIActionEvent {
     val vmActionEvent = MutableLiveData<BaseActionEvent>()
 
     override fun showLoading(msg: String) {
-        vmActionEvent.value = ShowLoadingEvent(msg)
+        vmActionEvent.postValue(ShowLoadingEvent(msg))
     }
 
     override fun dismissLoading() {
-        vmActionEvent.value = DismissLoadingEvent
+        vmActionEvent.postValue(DismissLoadingEvent)
     }
 
     override fun showToast(msg: String) {
-        vmActionEvent.value = ShowToastEvent(msg)
+        vmActionEvent.postValue(ShowToastEvent(msg))
     }
 
     override fun finishView() {
-        vmActionEvent.value = FinishViewEvent
+        vmActionEvent.postValue(FinishViewEvent)
     }
 
 }

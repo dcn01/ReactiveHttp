@@ -53,9 +53,9 @@ class TestDataSource(actionEventEvent: IUIActionEvent) : RemoteExtendDataSource<
 
     private suspend fun testDelay(): HttpResBean<String> {
         withIO {
-            delay(4000)
+            delay(3000)
         }
-        return HttpResBean(Random.nextInt(0, 2), "msg", "data coming")
+        return HttpResBean(1, "msg", "data coming")
     }
 
     fun testDelay(callback: RequestCallback<String>): Job {
@@ -65,8 +65,10 @@ class TestDataSource(actionEventEvent: IUIActionEvent) : RemoteExtendDataSource<
     }
 
     fun testPair(callback: RequestPairCallback<List<ForecastsBean>, String>) {
-        execute(callback, showLoading = false, block1 = { getService().getWeather("411122") }, block2 = { testDelay() })
+        execute(callback, showLoading = false, block1 = { getService().getWeather("411122") }, block2 = {
+            delay(1000)
+            HttpResBean(1, "errMsg", "data coming")
+        })
     }
-
 
 }

@@ -3,12 +3,12 @@ package leavesc.reactivehttp.core.viewmodel
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelStoreOwner
 import leavesc.reactivehttp.core.coroutine.ICoroutineEvent
+import leavesc.reactivehttp.core.utils.showToastFun
 
 /**
  * 作者：CZY
@@ -92,11 +92,7 @@ interface IUIActionEventObserver : IUIActionEvent {
     }
 
     override fun showToast(msg: String) {
-        if (msg.isNotBlank()) {
-            lContext?.let {
-                Toast.makeText(it, msg, Toast.LENGTH_SHORT).show()
-            }
-        }
+        showToastFun(msg)
     }
 
     fun <T : Activity> startActivity(clazz: Class<T>) {

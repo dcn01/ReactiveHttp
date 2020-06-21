@@ -12,9 +12,13 @@ internal object HttpConfig {
 
     lateinit var context: Context
 
-    lateinit var formatExceptionFun: (baseException: BaseException) -> String
+    lateinit var exceptionFormatFun: (baseException: BaseException) -> String
 
     var exceptionRecordFun: ((throwable: Throwable) -> Unit)? = null
+
+    var exceptionHandleFun: ((exception: BaseException) -> Boolean)? = null
+
+    lateinit var isReleaseFun: (() -> Boolean)
 
     //本地定义的 code 以 CODE_LOCAL 开头
 

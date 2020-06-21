@@ -17,7 +17,7 @@ import leavesc.reactivehttp.core.viewmodel.IUIActionEvent
  * Blog：https://juejin.im/user/57c2ea9befa631005abd00c6
  */
 /**
- * 提供了 两个/三个 接口同时并行请求的方法，当所有接口都请求成功时，会通过 onSuccess 方法传出请求结果
+ * 提供了 两个/三个 接口同时并发请求的方法，当所有接口都请求成功时，会通过 onSuccess 方法传出请求结果
  * 当包含的某个接口请求失败时，则会直接回调 onFail 方法
  */
 open class RemoteExtendDataSource<T : Any>(iActionEvent: IUIActionEvent?, serviceApiClass: Class<T>) : RemoteDataSource<T>(iActionEvent, serviceApiClass) {
